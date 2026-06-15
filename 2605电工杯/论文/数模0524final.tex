@@ -1,0 +1,1971 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{booktabs}   % 提供 \toprule、\midrule、\bottomrule（可选）
+\usepackage{multirow}   % 合并单元格（可选）
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{}
+\renewcommand{\footrule}{}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+  \renewcommand{\headrule}{}%
+  \renewcommand{\footrule}{}%
+}
+\usepackage[hidelinks]{hyperref}
+
+\title{“中国电机工程学会杯”全国大学生电工数学建模竞赛}
+\begin{document}
+\date{}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{center}
+    {\Huge \textbf{参\hspace{0.2em}赛\hspace{0.2em}论\hspace{0.2em}文}}
+\end{center}
+
+\vspace{1cm}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{2.3}
+\begin{tabular}{|>{\centering\arraybackslash}m{2.5cm}|>{\centering\arraybackslash}m{10cm}|}
+\hline
+报名序号 & 005698 \\
+\hline
+论文题目 & 嵌入式社区养老服务站的建设与优化问题 \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+% 正文从这里开始写
+\newpage
+
+\begin{center}
+    {\large \textbf{【论文题目：嵌入式社区养老服务站的建设与优化问题】}}
+\end{center}
+
+\vspace{0.5cm}
+
+\section*{摘\hspace{1em}要}
+
+随着我国人口老龄化进程加速，社区嵌入式养老服务供给与需求的矛盾日益突出。本文围绕嵌入式社区养老服务站的建设与运营优化问题，系统研究了四个核心子问题：消费约束下的老年人口演化与服务需求预测，有限建设预算下的服务站选址与规模配置优化，政府补贴与利润率硬约束下的自主定价决策，以及模型对关键参数的灵敏度与鲁棒性评价。研究目标是在保障服务站运营可持续性的前提下，最大化老年人综合满意度，为政府财政补贴政策和服务站站点规划提供定量化决策支持。
+
+\vspace{0.2cm}
+
+本研究首先构建人口转移概率模型，结合人均收入消费上限约束，预测目标区域第五年末的老年人分类数量及有效服务需求量。在此基础上，设计预算约束下的枚举—评估框架：枚举全部满足建设预算的选址与规模组合，引入距离满意度S1、利用率响应满意度S2和价格满意度S3的加权合成函数，评估各候选方案的地理覆盖率与综合满意度，择优确定最优站点布局。进而，以最优选址方案为输入，建立连续定价优化模型：在利润率$\leq 8\%$与政府补贴（2元/有效服务人次，分级日上限）的双重约束下，解析求解各服务站的最优统一定价倍率，在保本且利润率不超过8\%的前提下对超额利润站点降价让利。最后，通过调整人口增长率、状态转移概率、固定管理成本和总建设预算四类参数，重新求解选址与定价问题以评估模型灵敏度。全部计算基于Python实现，核心方法包括枚举搜索与解析定价优化。
+
+\vspace{0.2cm}
+
+计算结果表明：（1）原始参数下的最优选址方案为5站配置、118万元建设成本，实现100\%地理覆盖率，平均满意度为0.9292，需求满足率为62.2\%，容量缺口率为37.8\%，说明G站仍存在容量瓶颈；（2）最优定价策略下多数站点降价3.0\%~5.3\%，个别站点维持基准价格，S3均维持1.00，综合利润率满足$\leq 8\%$约束，政府年补贴总额为240.90万元，老年人年节省支出约109万元；（3）定价优化对弱势老人经济可及性改善显著，半失能老人可负担率从60\%升至100\%，失能老人从30\%升至90\%；（4）灵敏度分析显示建设预算为最敏感参数，新参数下方案调整为4站、140万元，地理覆盖率仍保持100\%，满意度升至0.9357，模型在平价缓冲区内表现出较强的鲁棒性。
+
+\vspace{0.2cm}
+
+本文所提出的集成框架将人口预测、选址决策、定价优化与灵敏度分析有机统一，模型结构清晰、计算高效、结果可解释性强，为社区养老服务站的前期规划与持续运营提供了系统性的定量分析工具，具有较强的理论参考价值与工程应用前景。
+
+\vspace{0.5cm}
+
+\noindent \textbf{关键词：} 社区养老服务；选址优化；定价决策；政府补贴；灵敏度分析
+
+
+\newpage
+
+\section{问题重述}
+
+\subsection{赛题背景概括}
+
+随着我国人口老龄化程度不断加深，社区养老服务逐渐成为完善养老保障体系的重要环节。相比传统集中式养老机构，嵌入式社区养老服务站更贴近老年人的日常生活空间，能够在老人熟悉的社区环境中提供助餐、日间照料、上门护理、康复理疗、助浴和紧急救助等服务，从而提升养老服务的可及性与便利性。
+
+某城市成熟街道下辖 10 个相邻小区，政府计划在该区域内建设若干嵌入式社区养老服务站。由于不同小区的老年人口规模、健康状态结构、服务需求、消费能力以及空间距离均存在差异，若服务站数量过少或选址不合理，可能导致部分老人服务距离过远、满意度较低；若建设规模过大，又可能造成财政资金浪费和运营效率下降。因此，需要在预算、服务半径、服务能力、运营成本和老人满意度等多重约束下，建立合理的预测、选址、定价和补贴优化模型，为社区养老服务站的规划建设提供定量决策依据。
+
+\subsection{研究任务拆解}
+
+本题围绕“养老服务需求预测—服务站选址与规模优化—服务定价与补贴优化—灵敏度分析与方案比较”这一主线展开。首先，需要根据各小区当前老年人口数量、健康状态转移规律及人口变化假设，预测未来五年不同类型老人的数量变化；其次，在预测得到的服务需求基础上，确定服务站建设位置、数量和规模，使服务地理覆盖率、服务满意度尽可能提高；然后，在既定站点方案下，进一步研究服务定价与政府补贴对服务站利润和老人满意度的影响；最后，通过改变关键参数，对模型结果的稳定性和适用性进行检验。
+
+具体任务拆解如下。
+
+\begin{longtable}{|>{\centering\arraybackslash}p{1.5cm}|>{\centering\arraybackslash}p{3.2cm}|>{\centering\arraybackslash}p{4.5cm}|>{\centering\arraybackslash}p{4.5cm}|}
+\caption{研究任务拆解\label{tab:tasks}} \\
+\hline
+\textbf{问题编号} & \textbf{赛题要求} & \textbf{数学化表述} & \textbf{预期输出} \\
+\hline
+\endfirsthead
+
+\multicolumn{4}{c}{续表 \ref{tab:tasks}} \\
+\hline
+\textbf{问题编号} & \textbf{赛题要求} & \textbf{数学化表述} & \textbf{预期输出} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{{续下页}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+问题 1 & 预测未来五年老年人口结构与服务需求 & 建立老年人口状态递推模型，并结合服务需求次数和消费能力约束计算各类服务需求量 & 各小区第 1 至第 5 年末各类老人数量；第 5 年各项服务理论需求与约束后需求 \\
+\hline
+问题 2 & 确定养老服务站的选址、数量和规模 & 在预算、服务半径、服务能力和满意度规则约束下，建立多目标选址优化模型 & 最优站点数量、位置、规模、覆盖小区、地理覆盖率、满意度和年度利润 \\
+\hline
+问题 3 & 优化服务定价与政府补贴方案 & 在问题 2 的站点布局基础上，以最大化老人满意度为目标，并满足补贴规则和利润率约束 & 各项服务最优价格、各服务站年度利润和利润率、老人综合满意度与价格满意度 \\
+\hline
+问题 4 & 分析关键参数变化对方案的影响 & 分别改变老人增长率、健康状态转移概率、管理成本和建设预算，重新求解模型并比较结果 & 不同情景下的站点方案、价格、补贴、地理覆盖率、满意度变化及模型鲁棒性评价 \\
+\hline
+\end{longtable}
+
+\subsection{已知条件与待求结果}
+
+题目给出了该街道 10 个小区的基础数据、老年人口结构、健康状态转移概率、各类服务需求数据、服务站建设与运营成本、小区间距离矩阵以及满意度评分规则。老年人按照健康状态可分为自理、半失能和失能三类，不同类型老人对养老服务的需求强度不同，且其健康状态会随时间发生一定转移。题目同时规定，老人会选择满意度最高的服务站，服务站能力与建设规模相关，且有效服务半径不超过 1000 米。
+
+在规划建设阶段，需要考虑总建设预算不超过 120 万元，并在小型、中型和大型三类服务站中选择合适规模。服务站建成后，其实际有效服务人次不仅取决于老人理论需求，还受到服务满意度影响。满意度由距离、服务响应和价格等因素共同决定，因此选址、规模和定价之间存在明显耦合关系。
+
+在定价与补贴阶段，政府对除紧急救助以外的服务按实际有效服务人次给予补贴，同时对不同规模服务站设置每日补贴上限。养老机构需要满足保本微利要求，即利润率不超过 8\%。因此，服务价格既不能过高而降低老人满意度和可及性，也不能过低而导致服务站无法维持正常运营。
+
+综上，本文需要完成以下主要结果：
+
+\begin{enumerate}
+    \item 预测未来五年各小区自理、半失能和失能老人数量，并计算第 5 年末各类养老服务需求量；
+    \item 在建设预算、服务半径和服务能力约束下，确定养老服务站的最优建设数量、位置和规模；
+    \item 计算最优布局方案下各服务站的覆盖范围、年度利润、地理覆盖率以及各小区老人满意度；
+    \item 在政府补贴和利润率约束下，确定各项养老服务的合理定价，并分析不同类型老人服务可及性的变化；
+    \item 通过调整老人增长率、状态转移概率、管理成本和建设预算等关键参数，比较不同情景下方案变化，评价模型的灵敏度和鲁棒性。
+\end{enumerate}
+
+\newpage
+
+\section{问题分析}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{逻辑关系图1.png}
+\caption{问题分析逻辑关系图}
+\label{fig:logic_diagram}
+\end{figure}
+
+\subsection{对问题的内在逻辑分析}
+
+本题表面上是在为10个相邻小区规划嵌入式社区养老服务站，实际上要回答的是一个更完整的现实问题：未来五年，这片街区会有多少老人、他们需要什么服务、服务站应该建在哪里、建多大、如何收费，才能既让老人愿意用、用得起，又让服务站能够长期运行下去。
+
+如果把整个建模过程看作一个社区养老服务体系的建设流程，那么一切工作的逻辑起点是人。政府要建设养老服务站，首先必须知道服务对象是谁、数量有多少、未来会怎样变化。当前10个小区中已经有自理、半失能和失能三类老人，不同类型老人的服务需求差异较大，并且随着时间推移，老人的身体状态会发生变化。自理老人可能转为半失能，半失能老人可能转为失能，失能老人一般不会恢复为半失能或自理状态。同时，老年人口还受到自然死亡和新增老人的影响。因此，问题1的核心任务就是先建立一个能够逐年更新老人数量和健康状态结构的预测模型，估计未来五年各小区各类老人的规模。只有先把“未来有多少人需要服务”这个问题回答清楚，后续的站点建设和服务供给才有依据。
+
+在得到未来老年人口结构之后，第二个环节：这些老人到底需要多少服务。题目给出了不同类型老人对助餐、日间照料、上门护理、康复理疗、助浴、紧急救助等服务的月均需求次数。由于自理老人、半失能老人和失能老人的身体状况不同，他们对各项服务的依赖程度并不相同。例如，失能老人通常对上门护理、康复理疗和助浴等服务需求更高，而自理老人可能更多使用助餐和日间照料等基础服务。因此，问题1不仅要预测老人数量，还要进一步把人口规模转化为服务需求量。这里需要区分两个层次：一是理论需求，即老人从身体和生活照料角度实际需要多少服务；二是考虑消费能力后的需求，即在老人月服务消费上限约束下，能够真正释放出来的服务需求。前者反映服务缺口，后者更接近后续选址和运营中的实际服务量。
+
+当我们知道了未来哪些小区有多少老人、需要多少服务后，第三个环节：服务站应该建在哪里。问题2是全文的核心空间优化问题。服务站不是建得越多越好，也不是规模越大越好。若站点太少，部分老人可能距离服务站较远，超过1000米有效服务半径后甚至无法形成有效服务需求；若站点太多或规模过大，又会受到建设预算限制，并可能造成资源闲置。题目规定服务站只能在10个小区内部选址，且规模分为小型、中型和大型，不同规模对应不同建设成本、运营成本和服务能力。因此，问题2需要同时回答三个问题：建几个站，分别建在哪些小区，每个站建成什么规模。问题2的难点在于，它并不是单纯追求距离最近或成本最低，而是在多个目标之间寻找平衡。一方面，政府希望尽可能提高服务地理覆盖率，让更多老人至少能够享受到一项养老服务；另一方面，老人是否愿意选择某个服务站，还取决于距离、响应能力和价格等因素形成的综合满意度。题目进一步规定，老人只选择满意度最高的服务站，且实际有效服务人次等于理论需求人次与满意度的乘积。这意味着站点布局不仅决定“能不能覆盖”，还会影响“服务能不能真正被使用”。因此，在问题2中，需要把地理覆盖率、满意度、服务半径、服务能力和建设预算统一到同一个优化框架中。
+
+一个建设方案即使在空间上合理，如果价格过高，老人可能因为经济负担过重而减少服务使用；如果价格过低，服务站又可能难以覆盖运营成本，无法长期维持。因此，问题3从“建成以后如何运营”的角度继续展开。此时，问题2得到的站点位置和规模被视为已知条件，模型的重点转向服务定价和政府补贴。政府补贴的作用是降低老人负担、提高服务可及性，但补贴并不是无限的，除紧急救助外，各项服务按实际有效服务人次补贴，并且不同规模服务站有每日补贴上限。同时，养老机构需要满足保本微利要求，利润率不能超过8\%。这使得问题3成为一个在满意度、价格、补贴和利润率之间进行协调的运营优化问题。
+
+从逻辑上看，问题2和问题3之间存在明显的承接关系。问题2解决的是“服务站在哪里、能服务哪些人”的问题，它决定了距离满意度、服务响应能力和各站可能承担的需求量；问题3解决的是“服务如何收费、补贴如何发挥作用”的问题，它进一步影响价格满意度、老人负担和服务站利润。也就是说，问题2为问题3提供空间结构和服务能力边界，问题3则在这个边界内优化经济运行方式。二者共同决定最终方案是否既公平可及，又具有运营可持续性。
+
+最后，现实中的社区养老规划并不会停留在一个固定情景下。老年人口增长可能比预期更快，老人健康状态恶化速度可能发生变化，人工和管理成本可能上升，政府预算也可能调整。因此，问题4承担的是“检验方案是否经得起变化”的任务。通过改变老人增长率、健康状态转移概率、固定管理成本和建设预算，并重新求解问题2和问题3，可以观察站点数量、站点位置、服务价格、政府补贴、地理覆盖率和满意度是否发生明显变化。如果关键指标变化较小，说明模型具有较好的鲁棒性；如果某些参数变化导致方案显著调整，则说明这些因素是规划中需要重点关注的敏感因素。
+
+综上，四个问题之间形成了清晰的递进关系：问题1先回答“未来需要服务的人有多少、需求有多大”；问题2在此基础上回答“服务站建在哪里、建多大、服务谁”；问题3进一步回答“建成后如何定价和补贴，才能兼顾老人满意度与机构可持续运营”；问题4则回答“当外部条件变化时，方案是否仍然稳定可靠”。因此，本文的建模思路并不是简单地分别求解四个小问，而是构建一条从需求预测到设施规划、再到运营优化和鲁棒性检验的完整决策链。
+
+\subsection{总体建模思路}
+
+基于上述逻辑，本文采用“人口预测—需求测算—选址优化—定价补贴—情景检验”的总体建模路线。
+
+\textbf{第一阶段：人口预测。}以10个小区为基本空间单元，以自理、半失能和失能三类老人为状态变量，结合自然死亡率、新增老年人口比例和健康状态转移概率，建立逐年递推模型。该模型的输出是未来五年各小区不同类型老人的数量，为后续服务需求计算提供基础数据。
+
+\textbf{第二阶段：需求测算。}根据预测得到的第5年末老人数量，结合不同类型老人对六类养老服务的月均需求次数，计算各小区各项服务的理论月需求量。在此基础上，再考虑老人月服务消费上限，对理论需求进行约束修正，得到更符合实际支付能力的服务需求量。
+
+\textbf{第三阶段：服务站选址与规模优化。}以10个小区作为候选站点，设置是否建站、建站规模和服务分配关系等决策变量。在总建设预算、服务半径、服务能力等约束下，综合考虑地理覆盖率和老人满意度，确定最优站点数量、站点位置和站点规模。该阶段的目标不是单一地追求最低成本，而是在有限预算内尽可能提高服务可达性和服务体验。
+
+\textbf{第四阶段：服务定价与补贴优化。}在问题2得到的站点布局基础上，进一步考虑各项服务价格、政府补贴、服务站年度利润和利润率约束。由于价格会影响老人满意度，补贴会影响服务站收益，因此需要在老人满意度最大化和机构保本微利之间寻找平衡点。
+
+\textbf{第五阶段：灵敏度与鲁棒性分析。}分别改变老人增长率、健康状态转移概率、日固定管理成本和总建设预算，重新求解选址模型和定价模型，并比较不同情景下的站点方案、服务价格、补贴总额、地理覆盖率和满意度变化。通过该过程判断模型对关键参数的敏感程度，并评价方案在实际推广中的稳定性。
+
+\section{模型假设}
+
+本模型基于以下基本假设，各假设在问题间的适用关系如表\ref{tab:assumptions}所示。
+
+{\small
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{|>{\centering\arraybackslash}p{1.5cm}|>{\centering\arraybackslash}p{4cm}|>{\centering\arraybackslash}p{4cm}|>{\centering\arraybackslash}p{3cm}|}
+\caption{模型假设}
+\label{tab:assumptions}\\
+\hline
+\textbf{编号} & \textbf{模型假设} & \textbf{设置依据} & \textbf{可能影响} \\
+\hline
+\endfirsthead
+
+\multicolumn{4}{c}{续表} \\
+\hline
+\textbf{编号} & \textbf{模型假设} & \textbf{设置依据} & \textbf{可能影响} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{{续下页}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+假设1 & \textbf{人口转移概率在5年规划期内保持恒定。} 即每年自理→半失能转移概率 $p_{SH}$、半失能→失能转移概率 $p_{HD}$ 及自然死亡率 $d$ 不随时间变化。 & 5年属中期规划周期，人口健康状态转移受慢性病演化规律主导，短期内发生结构性突变的概率较低；附件1提供了基于历史统计的固定概率值作为输入。 & 简化了递推计算复杂度，使问题1的预测模型可从当前状态直接递推至目标年。若实际转移概率受政策干预（如早期筛查）影响而下降，则模型会\textbf{高估半失能与失能老人数量}，进而高估服务总需求。灵敏度分析（问题4）已验证 ±1pp 范围内结果稳健。 \\
+
+假设2 & \textbf{各小区为封闭人口系统，老人仅在所属小区内产生和接受服务需求。} 不考虑小区间的人口流动与跨区服务消费。 & 社区养老服务以“就近原则”为核心设计理念，服务半径通常不超过1000米；小区间距离均值约700米，跨区消费的交通成本与时间成本较高，封闭假设符合实际运营逻辑。 & 显著降低了需求分配与站点选址的耦合复杂度——每个小区的服务需求可直接按距离分配给最近站点。若存在显著的跨区服务消费现象，会导致各站点负荷估计出现偏差：\textbf{中心位置站点被低估负荷、边缘站点被高估}。 \\
+
+假设3 & \textbf{月人均服务需求次数仅取决于老人类型，与价格、收入、站点距离等因素无关。} 需求随价格/距离/满意度下降的效应统一通过“有效服务人次 = 理论需求 × 满意度”来刻画。 & 附件2给出了按老人分类的月人均需求经验数据；将需求定义为外生的“潜在需求”，通过满意度因子将其转化为“实际有效需求”，实现了需求侧与供给侧的解耦。 & 避免了在需求函数中引入价格弹性和距离衰减系数等需要额外标定的参数，降低了模型辨识难度。然而，这种处理\textbf{未区分不同类型老人对价格变化的敏感度差异}（如失能老人对价格的需求弹性可能低于自理老人），可能低估降价对弱势老人的可及性改善幅度。 \\
+
+假设4 & \textbf{服务站建设成本为一次性投入，按20年直线折旧分摊至各年；运营成本只含固定管理费与直接服务成本两类。} 不计土地成本、人员培训费及设施维护费等间接支出。 & 附件3给出的成本结构仅包含建设费和日固定管理费两项核心科目；直线折旧是公共设施经济评价的常用方法，符合政府投资项目核算惯例。 & 简化了财务核算模型，使利润率约束可直接表达为线性不等式。实际运营中，\textbf{人力成本可能随通胀逐年上升}（未被建模），且设备大修等非经常性支出可能造成单年利润大幅波动，导致模型给出的“保本微利”方案在实际执行中过于乐观。 \\
+
+假设5 & \textbf{各服务站对同一类型服务采用统一定价倍率 $\alpha_i$。} 即一个站点内所有非紧急服务（助餐、日间照料、上门护理、康复理疗、助浴）按相同比例在基准价基础上浮动，紧急救助始终免费。 & 统一定价降低了服务站的价格管理复杂度，便于老人理解和政府监管；在基准毛利率相近（17.9\%~20\%）的情况下，等比例调价对各服务的盈亏影响差异不大。 & 将定价决策变量从 $5\times N_{\text{stations}}$ 压缩至 $N_{\text{stations}}$，大幅降低了优化搜索空间。但\textbf{可能错过差异化定价的优化机会}——如对毛利较高的服务多降价以吸引流量、对毛利较低的服务少降价以保利润。 \\
+
+假设6 & \textbf{站点容量为绝对约束——当某站点分配的总需求超出其日最大服务人次时，超出的部分被直接截断（视为无法提供服务），而非通过排队延迟或临时扩容来缓解。} & 服务站的日容量由设施面积和服务人员数量等硬件条件决定，短期内存在刚性上限；容量溢出表明选址或规模配置不合理，应通过调整规划方案解决而非依赖临时措施。 & 容量截断保证实际服务量不超过容量，但原始需求可能超过容量，超出部分计为容量缺口。截断处理\textbf{未反映"超载→S2下降→满意度下降→有效需求下降"的负反馈循环}：若在截断前先计入S2的满意度惩罚，部分"恰好超载"的站点可能因有效需求自动缩减而无需截断。 \\
+
+假设7 & \textbf{老人满意度对有效服务需求的映射为线性乘性关系}，即有效需求 = 理论需求 × 综合满意度，且满意度下限为 $0.60$（对应 $S_1=S_2=S_3=0.60$ 的最不利情形）。 & 评分制满意度评估在公共服务领域有广泛实践基础，线性映射是缺少弹性数据时最简洁的建模选择；下限值 $0.60$ 对应三个满意度维度均取最低有效值的加权结果。 & 实际的需求-满意度关系可能为非线性：满意度从 $0.95$ 降至 $0.90$ 时对需求的抑制效应，与从 $0.70$ 降至 $0.65$ 时可能有本质不同。线性假设在满意度较高区域可能\textbf{低估了需求粘性}（老人对熟悉服务站有路径依赖），在满意度较低区域可能\textbf{高估了需求耐受度}。 \\
+
+\end{longtable}
+}
+
+\subsection*{假设在问题间的适用关系}
+
+\begin{itemize}
+    \item 假设1–3 主要用于\textbf{问题1}（人口与需求预测）
+    \item 假设2、5、6、7 贯穿\textbf{问题2}（选址优化）
+    \item 假设4–7 用于\textbf{问题3}（定价与补贴）
+    \item 假设1–4 在\textbf{问题4}（灵敏度分析）中通过参数扰动进行部分松弛检验
+\end{itemize}
+
+
+\section{符号约定}
+
+{\small
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{|>{\centering\arraybackslash}p{2cm}|>{\centering\arraybackslash}p{6cm}|>{\centering\arraybackslash}p{3.5cm}|}
+\caption{符号约定表}\\
+\hline
+\textbf{符号} & \textbf{含义} & \textbf{取值/说明} \\
+\hline
+\endfirsthead
+
+\multicolumn{3}{c}{续表} \\
+\hline
+\textbf{符号} & \textbf{含义} & \textbf{取值/说明} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{3}{r}{{续下页}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+$\mathcal{C}$ & 小区集合 & \{A, B, …, J\}，共10个 \\
+$\mathcal{K}$ & 服务项目集合 & \{助餐, 日间照料, 上门护理, 康复理疗, 助浴, 紧急救助\} \\
+$\mathcal{NE}$ & 非紧急服务集合 & \{助餐, 日间照料, 上门护理, 康复理疗, 助浴\} \\
+$\mathcal{S}$ & 候选站点集合 & 同 $\mathcal{C}$ \\
+$j$ & 小区索引 & \\
+$i$ & 站点索引 & \\
+$k$ & 服务项目索引 & \\
+$e$ & 老人类型索引 & S=自理, H=半失能, D=失能 \\
+$t$ & 年份 & $t=0$ 为当前，$t=5$ 为目标年 \\
+$d$ & 自然死亡率 & $d=0.05$ \\
+$r$ & 新增老人比例 & $r=0.07$（基准） \\
+$p_{SH}$ & 自理→半失能转移概率 & $p_{SH}=0.045$（基准） \\
+$p_{HD}$ & 半失能→失能转移概率 & $p_{HD}=0.10$（基准） \\
+$\eta_e$ & 消费上限比例 & $\eta_S=0.20,\ \eta_H=0.25,\ \eta_D=0.30$ \\
+$B$ & 建设总预算 & $B=120$ 万元（基准） \\
+$b_s$ & 规模 $s$ 的建设成本 & $b_1=18,\ b_2=32,\ b_3=45$（万元） \\
+$F_s$ & 规模 $s$ 的日固定管理费 & $F_1=2000,\ F_2=3200,\ F_3=4400$（元） \\
+$\text{Cap}_s$ & 规模 $s$ 的日服务容量 & $\text{Cap}_1=1000,\ \text{Cap}_2=2000,\ \text{Cap}_3=3000$ \\
+$G_s^{\text{sub}}$ & 日补贴上限 & $G_1=1000,\ G_2=1800,\ G_3=2600$（元） \\
+$p_k$ & 服务 $k$ 的基准单价 & 见附表 \\
+$c_k$ & 服务 $k$ 的单位成本 & 见附表 \\
+$d_k^e$ & 类型 $e$ 老人对服务 $k$ 的月均需求 & 见附表 \\
+\end{longtable}
+}
+
+
+\section{数据来源与预处理}
+
+本节说明本文所用数据的来源、变量含义及预处理方法。由于本题的预测结果、选址结果、定价结果和灵敏度分析均主要基于比赛官方附件数据，因此需要先对各附件中的人口、需求、成本、距离和满意度规则进行统一整理，使其能够为后续模型建立提供规范、可直接调用的数据基础。
+
+\subsection{数据来源}
+
+本文数据均来源于比赛官方提供的附件 1—附件 5，各数据表的主要内容及用途如表\ref{tab:data_sources}所示。
+
+\begin{table}[H]
+\centering
+\caption{数据来源及用途说明}
+\label{tab:data_sources}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{2.8cm}|p{2.2cm}|p{3.2cm}|p{2.5cm}|p{2.5cm}|}
+\hline
+\textbf{数据名称} & \textbf{来源} & \textbf{字段/变量} & \textbf{用途} & \textbf{支撑材料文件} \\
+\hline
+小区基础数据 & 竞赛题目附件1 & 各小区人口规模、60岁及以上老人数量、自理老人数量、半失能老人数量、失能老人数量、人均月收入、健康状态转移概率 & 用于建立未来五年老人数量递推预测模型，并为服务需求测算和消费能力约束提供基础数据 & 附件1：小区基础数据.xlsx \\
+\hline
+服务需求数据 & 竞赛题目附件2 & 各类老人对助餐、日间照料、上门护理、康复理疗、助浴、紧急救助的月均需求次数；服务营收、直接支出、月服务消费上限 & 用于计算第5年末各小区理论服务需求量和消费约束后的服务需求量，并支撑后续利润测算与定价优化 & 附件2：服务需求数据.xlsx \\
+\hline
+服务站建设与运营成本 & 竞赛题目附件3 & 小型、中型、大型服务站建设成本、日均固定管理成本、日最大服务人次、折旧年限、有效服务半径 & 用于建立服务站选址与规模优化模型，计算建设预算约束、服务能力约束和年度成本 & 附件3：服务站建设与运营成本.xlsx \\
+\hline
+小区间距离矩阵 & 竞赛题目附件4 & 10个小区两两之间的距离，单位为米 & 用于判断服务站覆盖范围，构造服务半径约束，并计算距离满意度 & 附件4：小区间距离矩阵.xlsx \\
+\hline
+满意度评分规则 & 竞赛题目附件5 & 距离满意度、响应满意度、价格满意度及综合满意度计算规则 & 用于计算老人对服务站的综合满意度，确定老人选择的服务站，并计算实际有效服务人次 & 附件5：满意度评分规则.xlsx \\
+\hline
+\end{tabular}
+\end{table}
+
+以上数据覆盖了本文建模所需的主要信息。其中，附件1和附件2主要对应需求端，描述老年人口结构和服务需求；附件3和附件4主要对应供给端，描述服务站建设能力、成本和空间可达性；附件5则用于连接需求端和供给端，刻画老人对不同服务方案的综合满意程度。
+
+\subsection{数据清洗与特征构造}
+
+在正式建模前，本文对官方附件数据进行统一整理和预处理，主要包括对象编号统一、变量口径统一、单位换算、需求特征构造、覆盖关系构造和满意度规则整理。
+
+\textbf{（1）小区编号统一}
+
+题目中共有10个连片小区，本文统一记为A、B、C、D、E、F、G、H、I、J。后续在人口预测、需求测算、距离矩阵、服务站选址和结果输出中，均以该编号作为小区索引，保证不同附件之间的数据能够一一对应。
+
+\textbf{（2）老人类型统一}
+
+本文将老人健康状态统一划分为三类：自理老人、半失能老人和失能老人。对于附件中可能出现的“半自理”等相近表述，统一并入“半失能老人”类别。这样处理后，人口预测模型和服务需求矩阵均以三类老人作为统一维度。
+
+\textbf{（3）服务项目统一}
+
+本文将服务项目统一整理为六类：助餐、日间照料、上门护理、康复理疗、助浴和紧急救助。后续理论需求、实际需求、服务定价、政府补贴、服务支出和满意度计算均围绕这六类服务展开。
+
+\textbf{（4）单位换算}
+
+由于不同附件中的数据单位不完全相同，建模前需进行单位统一。附件3中建设成本以“万元”为单位，本文在计算时统一换算为“元”；运营成本以“元/日”为单位，年度核算时乘以365天；服务需求以“次/月”为单位，若与服务站日服务能力比较，则换算为日均服务人次；小区间距离以“米”为单位，可直接用于服务半径判断和距离满意度计算。
+
+\textbf{（5）人口预测特征构造}
+
+以各小区当前自理、半失能和失能老人数量作为初始状态，结合题目给出的自然死亡率、新增老人比例和状态转移概率，构造年度递推所需参数。新增老人主要计入自理老人群体；自理老人可转为半失能老人，半失能老人可转为失能老人，失能老人不再恢复为其他状态。由此形成未来五年老人数量预测模型的输入数据。
+
+\textbf{（6）服务需求特征构造}
+
+根据附件2中不同类型老人对六项服务的月均需求次数，构造“老人类型—服务项目”需求矩阵。将该需求矩阵与第5年末各小区三类老人数量相乘，可得到各小区各项服务的理论月需求量。进一步结合月服务消费上限，对理论需求进行约束修正，得到更符合支付能力条件的服务需求量。
+
+\textbf{（7）服务站成本特征构造}
+
+根据附件3中小型、中型、大型服务站的建设和运营数据，构造服务站规模参数表。建设成本按20年等额折旧分摊为年度建设成本，日均固定管理成本乘以365得到年度运营成本，日最大服务人次用于服务能力约束。由此可得到每类服务站的年度成本、服务能力和建设预算占用情况。
+
+\textbf{（8）覆盖关系特征构造}
+
+根据附件4的小区间距离矩阵和题目规定的1000米有效服务半径，构造小区与候选服务站之间的可达矩阵。当小区到候选站点的距离不超过1000米时，记为可覆盖；否则记为不可覆盖。该矩阵既用于判断地理覆盖率，也用于限定老人可选择的服务站集合。
+
+\textbf{（9）满意度特征构造}
+
+根据附件5，将综合满意度拆分为距离满意度、响应满意度和价格满意度三部分，并整理为可计算规则。其中，距离满意度由小区到服务站的距离决定，响应满意度由服务站利用率决定，价格满意度由服务价格相对基准价格的变化决定。综合满意度按题目给定权重计算，并用于确定老人选择的服务站及实际有效服务人次。
+
+经过上述处理，原始附件数据被转化为人口预测参数、服务需求参数、服务站规模参数、空间距离参数和满意度评价参数五类建模数据，为后续模型建立提供统一输入。
+
+\subsection{数据质量检验}
+
+为保证后续建模结果的合理性，本文在数据预处理后对主要数据进行了逻辑一致性和单位一致性检验，检验内容如表\ref{tab:data_quality}所示。
+
+\begin{longtable}{|p{2.5cm}|p{4cm}|p{3cm}|p{3cm}|}
+\caption{数据质量检验说明}
+\label{tab:data_quality}\\
+\hline
+\textbf{检验项目} & \textbf{检验方法} & \textbf{判定标准} & \textbf{处理结果} \\
+\hline
+\endfirsthead
+
+\multicolumn{4}{c}{续表} \\
+\hline
+\textbf{检验项目} & \textbf{检验方法} & \textbf{判定标准} & \textbf{处理结果} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{{续下页}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+人口结构一致性 & 对各小区自理、半失能、失能老人数量求和，并与60岁及以上老人总数比较 & 三类老人数量之和应与老人总数一致或误差可解释 & 若一致则直接使用；若存在微小偏差，以三类老人数量之和作为状态递推初始值 \\
+\hline
+状态转移方向合理性 & 检查转移概率是否符合“自理→半失能→失能”的单向变化关系 & 不考虑半失能或失能老人自然恢复为更健康状态 & 将状态转移规则整理为单向递推形式 \\
+\hline
+服务项目对应性 & 检查六类服务在需求次数、营收、支出、补贴和满意度规则中是否能够对应 & 服务名称和顺序应保持一致 & 统一服务项目名称，保证各表可按服务类别匹配 \\
+\hline
+单位一致性 & 检查人口、需求、成本、距离、服务能力等变量单位 & 建模计算前需统一为同一时间口径和金额口径 & 将建设成本换算为元，日成本换算为年成本，月需求在必要时换算为日均需求 \\
+\hline
+距离矩阵合理性 & 检查距离矩阵主对角线是否为0，矩阵是否近似对称 & 小区到自身距离为0，两小区间往返距离应一致 & 作为服务半径约束和距离满意度计算基础 \\
+\hline
+覆盖关系可用性 & 根据1000米服务半径判断各小区可达站点 & 至少存在可行站点组合满足基本覆盖要求 & 构造0-1可达矩阵，用于选址优化模型 \\
+\hline
+成本约束可用性 & 检查不同规模服务站建设成本、运营成本和服务能力是否完整 & 每类规模均需具备建设成本、运营成本和容量参数 & 构造服务站规模参数表，用于预算约束和利润测算 \\
+\hline
+满意度规则完整性 & 检查距离、响应、价格三类满意度评分规则及权重 & 综合满意度应能由三类得分加权得到 & 整理为可直接计算的满意度函数 \\
+\hline
+\end{longtable}
+
+通过上述检验，本文确认官方附件数据能够支撑问题1至问题4的建模需求。预处理后的数据既保留了题目给定信息，又统一了变量口径和计算单位，可用于后续老人数量预测、服务需求测算、服务站选址与规模优化、服务定价与补贴优化以及灵敏度分析。
+
+\section{模型建立与求解}
+\subsection{问题1：人口演化与服务需求预测}
+
+\subsubsection{老年人三态递推模型}
+
+设 $S_t$、$H_t$、$D_t$ 分别为第 $t$ 年末自理、半失能、失能老人数量，$T_t=S_t+H_t+D_t$ 为总老年人口。每年按“存活→转移→新增”顺序递推：
+
+\begin{equation}
+S_{t+1} = (1-d)(1-p_{SH})\cdot S_t + r\cdot T_t \tag{1.1}
+\end{equation}
+
+\begin{equation}
+H_{t+1} = (1-d)(1-p_{HD})\cdot H_t + (1-d)\cdot p_{SH}\cdot S_t \tag{1.2}
+\end{equation}
+
+\begin{equation}
+D_{t+1} = (1-d)\cdot D_t + (1-d)\cdot p_{HD}\cdot H_t \tag{1.3}
+\end{equation}
+
+\textbf{参数解释：}
+\begin{itemize}
+    \item $(1-d)$：存活率（5\%死亡率，存活率95\%）
+    \item $(1-p_{SH})$：自理老人未发生失能恶化的比例
+    \item $r\cdot T_t$：新增的60岁以上老人，按总基数比例计算
+\end{itemize}
+
+代入基准参数值后：
+
+\begin{equation}
+\begin{aligned}
+S_{t+1} &= 0.95 \times (1-0.045) \times S_t + 0.07 \times T_t \\
+H_{t+1} &= 0.95 \times (1-0.10) \times H_t + 0.95 \times 0.045 \times S_t \\
+D_{t+1} &= 0.95 \times D_t + 0.95 \times 0.10 \times H_t
+\end{aligned}
+\end{equation}
+
+\subsubsection{理论服务需求量}
+
+对第5年末每个小区 $j$、每类服务 $k$：
+
+\begin{equation}
+D_{j,k}^{\text{theory}} = \sum_{e\in\{S,H,D\}} n_{j}^{e} \cdot d_k^{e} \tag{1.4}
+\end{equation}
+
+其中 $n_j^e$ 为小区 $j$ 中类型 $e$ 老人的数量，$d_k^e$ 为人均月服务需求次数。
+
+\subsubsection{消费约束修正}
+
+\textbf{消费上限：}
+
+\begin{equation}
+C_{j}^{e} = I_j \cdot \eta_e \tag{1.5}
+\end{equation}
+
+其中 $I_j$ 为小区 $j$ 的月人均收入，$\eta_e$ 为类型 $e$ 老人的消费比例上限。
+
+\textbf{理论月服务费（仅计非紧急服务）：}
+
+\begin{equation}
+\text{Cost}_e^{\text{theory}} = \sum_{k\in\mathcal{NE}} d_k^{e} \cdot p_k \tag{1.6}
+\end{equation}
+
+其中 $\mathcal{NE}=\mathcal{K}\setminus\{\text{紧急救助}\}$ 为非紧急服务集合，紧急救助单价 $p_k=0$，不参与费用计算。
+
+\textbf{消费约束削减因子：}
+
+\begin{equation}
+\lambda_{j}^{e} = \min\left(1,\ \frac{C_{j}^{e}}{\text{Cost}_e^{\text{theory}}}\right) \tag{1.7}
+\end{equation}
+
+\textbf{约束后人均需求：}
+
+\begin{equation}
+\tilde{d}_{j,k}^{e} = \begin{cases} d_k^{e} & k=\text{紧急救助} \\[4pt] d_k^{e} & k\in\mathcal{NE},\ \text{Cost}_e^{\text{theory}} \leq C_j^{e} \\[4pt] \max(0,\ d_k^{e} \cdot \lambda_j^{e}) & k\in\mathcal{NE},\ \text{Cost}_e^{\text{theory}} > C_j^{e} \end{cases} \tag{1.8}
+\end{equation}
+
+即紧急救助需求始终等于理论需求，不受消费约束削减；非紧急服务在消费超限时按 $\lambda$ 等比削减。
+
+\textbf{约束后小区月需求总量：}
+
+\begin{equation}
+D_{j,k}^{\text{adj}} = \sum_{e\in\{S,H,D\}} n_{j}^{e} \cdot \tilde{d}_{j,k}^{e} \tag{1.9}
+\end{equation}
+
+\textbf{日需求转化：}
+
+\begin{equation}
+\text{daily}_j = \sum_{k\in\mathcal{K}} \frac{D_{j,k}^{\text{adj}}}{30} \tag{1.10}
+\end{equation}
+
+\textbf{服务需求权重（用于后续满意度加权）：}
+
+\begin{equation}
+w_{j,k} = \frac{D_{j,k}^{\text{adj}}}{\sum_{m\in\mathcal{K}} D_{j,m}^{\text{adj}}} \tag{1.11}
+\end{equation}
+
+
+\subsection{问题2：选址与规模优化}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{优化流程图.jpg}
+\caption{嵌入式社区养老服务站选址与规模优化流程图}
+\label{fig:flowchart}
+\end{figure}
+
+\subsubsection{决策变量}
+
+\begin{equation}
+x_{i,s} \in \{0,1\},\quad i\in\mathcal{C},\ s\in\{1,2,3\} \tag{2.1}
+\end{equation}
+
+$x_{i,s}=1$ 表示在位置 $i$ 建设规模 $s$ 的服务站。
+
+\subsubsection{约束条件}
+
+\textbf{预算约束：}
+
+\begin{equation}
+\sum_{i\in\mathcal{C}}\sum_{s=1}^{3} x_{i,s} \cdot b_s \leq B \tag{2.2}
+\end{equation}
+
+\textbf{每个位置至多一个站点：}
+
+\begin{equation}
+\sum_{s=1}^{3} x_{i,s} \leq 1,\quad \forall i\in\mathcal{C} \tag{2.3}
+\end{equation}
+
+\subsubsection{满意度评分函数}
+
+\textbf{距离满意度 $S_1(d)$：}
+
+\begin{equation}
+S_1(d) = \begin{cases} 1.00 & d \leq 300\text{m} \\ 0.90 & 300 < d \leq 500\text{m} \\ 0.75 & 500 < d \leq 650\text{m} \\ 0.60 & 650 < d \leq 1000\text{m} \\ \text{不可达} & d > 1000\text{m} \end{cases} \tag{2.4}
+\end{equation}
+
+\textbf{利用率响应满意度 $S_2(u)$：}
+
+\begin{equation}
+S_2(u) = \begin{cases} 1.00 & u \leq 0.60 \\ 0.93 & 0.60 < u \leq 0.75 \\ 0.85 & 0.75 < u \leq 0.85 \\ 0.72 & 0.85 < u \leq 0.95 \\ 0.60 & u > 0.95 \end{cases} \tag{2.5}
+\end{equation}
+
+（问题2阶段 $S_3 = 1.0$ 固定，平价假设）
+
+\subsubsection{基于距离满意度优先的启发式分配规则}
+
+\begin{equation}
+\text{station}[j] = \arg\max_{i\in\mathcal{S}_{\text{open}}}\ S_1(d_{ij}) \tag{2.6}
+\end{equation}
+
+当 $S_1$ 相同时取距离较小者。记 $\mathcal{J}_i$ 为分配给站点 $i$ 的小区集合。
+
+该规则能最大化单个小区的距离满意度S1，但不一定最大化综合满意度，因为分配结果会影响各站点的负荷水平，进而影响S2（利用率满意度）。当某站点因承接过多小区而超载时，其S2下降可能抵消S1的增益。因此，该规则是一种启发式策略，而非严格的全局最优分配。
+
+改进方向：可采用容量约束下的流量分配模型替代单一最近站硬分配。设 $x_{ij}\in[0,1]$ 表示小区 $j$ 的需求分配给站点 $i$ 的比例，加入容量约束 $\sum_j x_{ij}\cdot\text{daily}_j \leq \text{Cap}_i$，目标函数最大化 $\sum_{i,j} x_{ij}\cdot\text{daily}_j\cdot\text{satisfaction}_{ij}$，通过线性规划求解全局最优分流方案。
+
+\subsubsection{站点负荷计算}
+
+\textbf{原始日负荷：}
+
+\begin{equation}
+L_i^{\text{raw}} = \sum_{j\in\mathcal{J}_i} \text{daily}_j \tag{2.7}
+\end{equation}
+
+\textbf{容量约束后的实际负荷：}
+
+\begin{equation}
+L_i^{\text{actual}} = \min\left(L_i^{\text{raw}},\ \text{Cap}_{s_i}\right) \tag{2.8}
+\end{equation}
+
+\textbf{利用率：}
+
+\begin{equation}
+u_i = \frac{L_i^{\text{actual}}}{\text{Cap}_{s_i}} \tag{2.9}
+\end{equation}
+
+\subsubsection{个体满意度}
+
+\begin{equation}
+\text{sat}_j = 0.2 \cdot S_1(d_{j,\text{station}[j]}) + 0.3 \cdot S_2(u_{\text{station}[j]}) + 0.5 \cdot 1.0 \tag{2.10}
+\end{equation}
+
+满意度取值下限为 $0.60$（最低满意度 $S_1=0.60,\ S_2=0.60,\ S_3=0.60$ 的加权值）。
+
+\subsubsection{有效日需求（满意度修正）}
+
+\begin{equation}
+\text{eff\_daily}_j = \text{daily}_j \cdot \text{sat}_j \cdot \min\left(1,\ \frac{\text{Cap}_{\text{station}[j]}}{L_{\text{station}[j]}^{\text{raw}}}\right) \tag{2.11}
+\end{equation}
+
+即：满意度越高，有效需求越接近理论需求；若站点超载，需求等比例压缩。
+
+\subsubsection{优化目标}
+
+\textbf{地理覆盖率：}定义某小区被覆盖当且仅当存在一个可达站点（距离$\leq$1000m）。地理覆盖率衡量的是空间可达性，不等同于服务被满足的比例。
+
+\begin{equation}
+\text{Coverage}_{\text{geo}} = \frac{\sum_{j:\text{station}[j]\neq\emptyset} \text{pop}_j}{\sum_{j\in\mathcal{C}} \text{pop}_j} \times 100\% \tag{2.12}
+\end{equation}
+
+\textbf{需求满足率：}反映实际服务量占原始需求的比例，弥补地理覆盖率在容量层面的不足。
+
+\begin{equation}
+\text{Fulfillment} = \frac{\sum_i \min(L_i^{\text{raw}}, \text{Cap}_i)}{\sum_j \text{daily}_j} \times 100\% \tag{2.12a}
+\end{equation}
+
+\textbf{容量缺口率：}超出站点容量的需求占比，衡量服务供给不足程度。
+
+\begin{equation}
+\text{Gap} = \frac{\sum_i \max(0,\ L_i^{\text{raw}} - \text{Cap}_i)}{\sum_j \text{daily}_j} \times 100\% \tag{2.12b}
+\end{equation}
+
+\textbf{平均满意度：}
+
+\begin{equation}
+\overline{\text{sat}} = \frac{\sum_{j:\text{station}[j]\neq\emptyset} \text{sat}_j \cdot \text{pop}_j}{\sum_{j:\text{station}[j]\neq\emptyset} \text{pop}_j} \tag{2.13}
+\end{equation}
+
+\textbf{综合评分（用于方案排序）：}
+
+\begin{equation}
+\text{Score} = 0.30 \times \text{Coverage}_{\text{geo}} + 0.30 \times \overline{\text{sat}} \times 100 + 0.30 \times \text{Fulfillment} - 0.10 \times \text{Gap} \tag{2.14}
+\end{equation}
+
+其中地理覆盖率、满意度、需求满足率各赋权0.30，容量缺口率赋权$-$0.10（惩罚项）。等权设置是因为三者均为0\textasciitilde100量纲的百分比指标，在当前问题规模下无先验理由偏向某一维度；缺口率权重较低是因为其信息已被需求满足率部分包含，设为惩罚项可避免双重计分。
+
+\subsubsection{财务核算}
+
+\textbf{年度服务营收：}
+
+\begin{equation}
+R_i = 365 \times \sum_{j\in\mathcal{J}_i}\sum_{k\in\mathcal{K}} \text{eff\_daily}_j \cdot w_{j,k} \cdot p_k \tag{2.15}
+\end{equation}
+
+\textbf{年度直接服务成本：}
+
+\begin{equation}
+C_i^{\text{direct}} = 365 \times \sum_{j\in\mathcal{J}_i}\sum_{k\in\mathcal{K}} \text{eff\_daily}_j \cdot w_{j,k} \cdot c_k \tag{2.16}
+\end{equation}
+
+\textbf{年度总运营成本（含折旧）：}
+
+\begin{equation}
+C_i^{\text{total}} = C_i^{\text{direct}} + F_{s_i} \cdot 365 + \frac{b_{s_i}}{20} \tag{2.17}
+\end{equation}
+
+\textbf{年度净利润：}
+
+\begin{equation}
+\Pi_i = R_i - C_i^{\text{total}} \tag{2.18}
+\end{equation}
+
+\subsubsection{求解方法}
+
+枚举所有满足预算约束的站点组合，对每个组合按式 (2.6)–(2.13) 评估满意度和地理覆盖率，按式 (2.14) 排序取最优。理论枚举规模：
+
+\begin{equation}
+\text{所有组合数} = \sum_{k=1}^{N} \binom{N}{k} \cdot 3^k = 4^{10} - 1 = 1{,}048{,}575 \tag{2.19}
+\end{equation}
+
+实际可行组合数由预算约束大幅缩减（约 1.5 万个）。
+
+
+\subsection{问题3：服务定价与政府补贴优化}
+
+\subsubsection{价格满意度函数 $S_3(\alpha)$}
+
+设定价倍率 $\alpha_{i,k} = p_{i,k}^{\text{actual}} / p_k^{\text{base}}$（问题3采用统一倍率 $\alpha_i$）：
+
+\begin{equation}
+S_3(\alpha) = \begin{cases} 1.00 & \alpha \leq 1.00 \quad \text{(平价)} \\ 0.90 & 1.00 < \alpha \leq 1.10 \quad \text{(微溢价)} \\ 0.75 & 1.10 < \alpha \leq 1.20 \quad \text{(中溢价)} \\ 0.60 & \alpha > 1.20 \quad \text{(高溢价)} \end{cases} \tag{3.1}
+\end{equation}
+
+\textbf{关键性质}：$S_3(\alpha)$ 在平价区间 $\alpha\in[0,1]$ 上恒为 $1.0$，因此在保本且利润率不超过8\%的前提下，对超额利润站点降价让利不会损失S3得分。
+
+\subsubsection{每社区 S3 加权平均}
+
+\begin{equation}
+S_{3,j} = \frac{\sum_{k\in\mathcal{NE}} w_{j,k} \cdot S_3(\alpha_{\text{station}[j]})}{1 - w_{j,\text{emergency}}} \tag{3.2}
+\end{equation}
+
+（紧急救助不计入定价，分母归一化）
+
+\subsubsection{综合满意度（含定价反馈）}
+
+\begin{equation}
+\text{sat}_j = \max\left(0.60,\ \min\left(1.0,\ 0.2\cdot S_{1,j} + 0.3\cdot S_{2,j} + 0.5\cdot S_{3,j}\right)\right) \tag{3.3}
+\end{equation}
+
+\subsubsection{政府补贴模型}
+
+\textbf{日补贴原始金额：}
+
+\begin{equation}
+\text{Sub}_i^{\text{raw}} = \sum_{j\in\mathcal{J}_i}\sum_{k\in\mathcal{NE}} \text{eff\_daily}_j \cdot w_{j,k} \cdot 2 \quad (\text{元}) \tag{3.4}
+\end{equation}
+
+补贴标准：\textbf{2元/有效非紧急服务人次}。
+
+\textbf{日补贴封顶：}
+
+\begin{equation}
+\text{Sub}_i^{\text{daily}} = \min\left(\text{Sub}_i^{\text{raw}},\ G_{s_i}^{\text{sub}}\right) \tag{3.5}
+\end{equation}
+
+\textbf{年补贴金额：}
+
+\begin{equation}
+S_i = \text{Sub}_i^{\text{daily}} \times 365 \tag{3.6}
+\end{equation}
+
+\subsubsection{利润率约束}
+
+\textbf{年度利润（含补贴）：}
+
+\begin{equation}
+\Pi_i(\alpha) = R_i(\alpha) - C_i^{\text{direct}} + S_i - F_{s_i} \cdot 365 - \frac{b_{s_i}}{20} \tag{3.7}
+\end{equation}
+
+其中 $R_i(\alpha) = \alpha \cdot R_i(1.0)$，$S_i$ 通过 $\alpha$ 间接影响有效需求→影响补贴。
+
+\textbf{利润率：}
+
+\begin{equation}
+\rho_i = \frac{\Pi_i}{C_i^{\text{total}}} \tag{3.8}
+\end{equation}
+
+硬约束：$\rho_i \geq 0$（保本）且 $\rho_i \leq 8\%$（微利上限）。
+
+\subsubsection{优化目标}
+
+采用分层定价策略：
+
+\textbf{第一层}（硬约束）：保证服务站保本且利润率不超过8\%：
+\begin{equation}
+0 \leq \rho_i(\alpha_i) \leq 0.08 \tag{3.9a}
+\end{equation}
+
+\textbf{第二层}（定价规则）：在第一层约束下，按基准价利润率$\rho_i(1.0)$分情况处理：
+\begin{equation}
+\alpha_i^* = \begin{cases} 1.00 & \text{若 } \rho_i(1.0) < 0 \\ 1.00 & \text{若 } 0 \leq \rho_i(1.0) \leq 0.08 \text{（维持基准价）} \\ \alpha_i^{8\%} & \text{若 } \rho_i(1.0) > 0.08 \text{（降价至}\rho_i=8\%\text{）} \end{cases} \tag{3.9b}
+\end{equation}
+
+其中$\alpha_i^{8\%}$为使利润率恰好降至8\%的定价倍率。当$\rho_i(1.0)<0$时，基准价下仍无法保本，在$\alpha_i\leq 1$的定价约束下不存在可行降价解，因此维持基准价，并通过补贴、分流或成本控制改善。该分层目标避免了单纯"最大化满意度"导致目标退化的问题——对利润率未超限的站点不强制降价，对超额利润站点则降价让利至监管上限。
+
+\subsubsection{解析最优解}
+
+由 $S_3$ 在平价区间的恒常性，最优解分三种情况：
+
+\textbf{情形1}（基线利润率 $\rho_i(1.0) < 0$）：基准价下无法保本。在$\alpha_i\leq 1$的定价约束下，降价只会加剧亏损，不存在可行降价解，因此维持基准价$\alpha_i^*=1.00$，并通过政府补贴、需求分流或成本控制改善盈利状况。
+
+\begin{equation}
+\alpha_i^* = 1.00 \tag{3.10a}
+\end{equation}
+
+\textbf{情形2}（基线利润率 $0 \leq \rho_i(1.0) \leq 8\%$）：维持基准价。
+
+\begin{equation}
+\alpha_i^* = 1.00 \tag{3.10b}
+\end{equation}
+
+\textbf{情形3}（基线利润率 $\rho_i(1.0) > 8\%$）：下调价格至利润率恰好 8\%，在保证S3=1.00（平价）的前提下实现老人支付价格最低。该策略本质上是在监管利润率上限内最大化让利于民。
+
+由 $\rho_i(\alpha) = \frac{\alpha R_{\text{base}} - C_{\text{direct}} + S - F - B}{C_{\text{total}}} = 0.08$，解得：
+
+\begin{equation}
+\alpha_i^* = \max\left(0,\ \min\left(1,\ \frac{1.08 \cdot C_{\text{total}} - S}{R_{\text{base}}}\right)\right) \tag{3.10c}
+\end{equation}
+
+其中 $R_{\text{base}} = R_i(1.0)$ 为基准价下的年度营收，$S$ 为年度补贴。
+
+\subsubsection{可及性分析模型}
+
+\textbf{老人月度服务费用：}
+
+\begin{equation}
+\text{Cost}_{j,e}^{\text{monthly}} = \sum_{k\in\mathcal{K}} \tilde{d}_{j,k}^{e} \cdot p_k^{\text{actual}} \tag{3.11}
+\end{equation}
+
+其中 $p_k^{\text{actual}} = \alpha_{\text{station}[j]} \cdot p_k$（紧急救助 $p_k=0$）。
+
+\textbf{经济可负担性判断：}
+
+\begin{equation}
+A_{j,e} = \begin{cases} 1\ (\text{可负担}) & \text{Cost}_{j,e}^{\text{monthly}} \leq I_j \cdot \eta_e \\ 0\ (\text{不可负担}) & \text{otherwise} \end{cases} \tag{3.12}
+\end{equation}
+
+\textbf{可及率：}
+
+\begin{equation}
+\text{AR}_e = \frac{\sum_{j\in\mathcal{C}} A_{j,e}}{|\mathcal{C}|} \times 100\% \tag{3.13}
+\end{equation}
+
+\textbf{补贴撬动效率：}
+
+\begin{equation}
+\eta_{\text{subsidy}} = \frac{\sum_i \left[R_i(1.0) - R_i(\alpha_i^*)\right]}{\sum_i S_i} \tag{3.14}
+\end{equation}
+
+该指标衡量每元政府补贴撬动的老年人支出节省金额。
+
+
+\subsection{问题4：灵敏度分析与鲁棒性评价}
+
+\subsubsection{灵敏度分析框架}
+
+对四类参数进行变参数重求解，如表\ref{tab:sensitivity_params}所示。
+
+\begin{table}[H]
+\centering
+\caption{灵敏度分析参数设置}
+\label{tab:sensitivity_params}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{参数类别} & \textbf{参数名} & \textbf{基准值} & \textbf{调整值} & \textbf{变化} \\
+\hline
+人口参数 & 新增老人比例 $r$ & 0.07 & \textbf{0.08} & +1.0pp \\
+\hline
+转移概率 & $p_{SH}$ & 0.045 & \textbf{0.055} & +1.0pp \\
+\hline
+转移概率 & $p_{HD}$ & 0.10 & \textbf{0.095} & −0.5pp \\
+\hline
+成本参数 & $F_s$（日固定管理费） & 2000/3200/4400 & \textbf{2400/3840/5280} & +20\% \\
+\hline
+预算参数 & $B$（建设预算） & 120万 & \textbf{140万} & +16.7\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{灵敏度量化}
+
+对各指标 $M$（地理覆盖率、平均满意度、补贴总额、利润率等），计算变化量：
+
+\begin{equation}
+\Delta M = M_{\text{new}} - M_{\text{orig}} \tag{4.1}
+\end{equation}
+
+\begin{equation}
+\delta M = \frac{M_{\text{new}} - M_{\text{orig}}}{|M_{\text{orig}}|} \times 100\% \tag{4.2}
+\end{equation}
+
+\subsubsection{鲁棒性评价准则}
+
+\begin{equation}
+\text{Robustness}(M) = \begin{cases} \text{强鲁棒} & |\delta M| \leq 5\% \\ \text{中等敏感} & 5\% < |\delta M| \leq 15\% \\ \text{高敏感} & |\delta M| > 15\% \end{cases} \tag{4.3}
+\end{equation}
+
+\subsection{附录A：基础数据表}
+
+\subsubsection{服务价格与成本}
+
+\begin{table}[H]
+\centering
+\caption{服务价格与成本}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{服务项目 $k$} & \textbf{基准价 $p_k$（元/次）} & \textbf{单位成本 $c_k$（元/次）} & \textbf{毛利（元）} & \textbf{毛利率} \\
+\hline
+助餐 & 10 & 8 & 2 & 20.0\% \\
+\hline
+日间照料 & 20 & 16 & 4 & 20.0\% \\
+\hline
+上门护理 & 30 & 24 & 6 & 20.0\% \\
+\hline
+康复理疗 & 28 & 23 & 5 & 17.9\% \\
+\hline
+助浴 & 25 & 20 & 5 & 20.0\% \\
+\hline
+紧急救助 & 0（公益） & 8 & −8 & — \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{服务站规模参数}
+
+\begin{table}[H]
+\centering
+\caption{服务站规模参数}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{规模 $s$} & \textbf{建设成本 $b_s$（万）} & \textbf{日固定管理 $F_s$（元）} & \textbf{日容量 $\text{Cap}_s$} & \textbf{日补贴上限 $G_s^{\text{sub}}$（元）} \\
+\hline
+1 小型 & 18 & 2000 & 1000 & 1000 \\
+\hline
+2 中型 & 32 & 3200 & 2000 & 1800 \\
+\hline
+3 大型 & 45 & 4400 & 3000 & 2600 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{月人均服务需求次数 $d_k^e$}
+
+\begin{table}[H]
+\centering
+\caption{月人均服务需求次数}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{服务项目} & \textbf{自理(S)} & \textbf{半失能(H)} & \textbf{失能(D)} \\
+\hline
+助餐 & 14 & 20 & 22 \\
+\hline
+日间照料 & 8 & 14 & 18 \\
+\hline
+上门护理 & 0 & 6 & 12 \\
+\hline
+康复理疗 & 2 & 4 & 6 \\
+\hline
+助浴 & 0 & 2 & 4 \\
+\hline
+紧急救助 & 0.15 & 1 & 3 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{消费上限比例与满意度权重}
+
+\begin{table}[H]
+\centering
+\caption{消费上限比例与满意度权重}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{指标} & \textbf{自理(S)} & \textbf{半失能(H)} & \textbf{失能(D)} \\
+\hline
+消费上限比例 $\eta_e$ & 20\% & 25\% & 30\% \\
+\hline
+& & & \\
+\hline
+\textbf{满意度维度} & $S_1$（距离） & $S_2$（响应） & $S_3$（价格） \\
+\hline
+综合权重 & 0.20 & 0.30 & 0.50 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection{附录B：公式总索引}
+
+\begin{table}[H]
+\centering
+\caption{公式总索引}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{编号} & \textbf{公式名称} & \textbf{所属问题} \\
+\hline
+(1.1)–(1.3) & 老年人三态递推方程 & 问题1.1 \\
+\hline
+(1.4) & 理论月服务需求量 & 问题1.2 \\
+\hline
+(1.5)–(1.8) & 消费约束修正 & 问题1.3 \\
+\hline
+(1.9) & 约束后月需求 & 问题1.3 \\
+\hline
+(1.10) & 日需求转化 & 问题1→2 \\
+\hline
+(1.11) & 服务需求权重 & 问题1→2/3 \\
+\hline
+(2.1)–(2.3) & 选址决策变量与约束 & 问题2 \\
+\hline
+(2.4)–(2.5) & $S_1$/$S_2$ 满意度函数 & 问题2 \\
+\hline
+(2.6) & 基于距离满意度优先的启发式分配规则 & 问题2 \\
+\hline
+(2.7)–(2.9) & 站点负荷与利用率 & 问题2 \\
+\hline
+(2.10) & 个体满意度 & 问题2 \\
+\hline
+(2.11) & 有效日需求 & 问题2 \\
+\hline
+(2.12)–(2.14) & 地理覆盖率/满意度/需求满足率/容量缺口率/综合评分 & 问题2 \\
+\hline
+(2.15)–(2.18) & 财务核算 & 问题2 \\
+\hline
+(2.19) & 枚举复杂度 & 问题2 \\
+\hline
+(3.1) & $S_3$ 价格满意度函数 & 问题3 \\
+\hline
+(3.2) & 社区加权 S3 & 问题3 \\
+\hline
+(3.3) & 综合满意度 & 问题3 \\
+\hline
+(3.4)–(3.6) & 政府补贴模型 & 问题3 \\
+\hline
+(3.7)–(3.8) & 利润与利润率 & 问题3 \\
+\hline
+(3.9a)(3.9b) & 分层定价策略 & 问题3 \\
+\hline
+(3.10a)(3.10b)(3.10c) & 解析最优解（三种情形） & 问题3 \\
+\hline
+(3.11)–(3.13) & 可及性分析模型 & 问题3 \\
+\hline
+(3.14) & 补贴撬动效率 & 问题3 \\
+\hline
+(4.1)–(4.2) & 灵敏度量化 & 问题4 \\
+\hline
+(4.3) & 鲁棒性判据 & 问题4 \\
+\hline
+\end{tabular}
+\end{table}
+
+\newpage
+% 答题过程从这里开始写
+\newpage
+
+\section{解答结果分析}
+
+\subsection{问题1：人口演化与服务需求预测结果}
+
+\subsubsection{问题1.1：未来五年各小区老人数量递推预测}
+
+\paragraph{模型参数}
+模型参数如表\ref{tab:params_1_1}所示。
+
+\begin{table}[H]
+\centering
+\caption{模型参数}
+\label{tab:params_1_1}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{参数名称} & \textbf{数值} \\
+\hline
+自然死亡率 & 5.0\% \\
+\hline
+新增老人比例 & 7.0\% \\
+\hline
+自理 $\to$ 半失能转移概率 & 4.5\% \\
+\hline
+半失能 $\to$ 失能转移概率 & 10.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{递推公式}
+递推公式如下：
+\begin{equation}
+\begin{aligned}
+S_{t+1} &= 0.95 \times (1-0.045) \times S_t + 0.07 \times T_t \\
+H_{t+1} &= 0.95 \times (1-0.10) \times H_t + 0.95 \times 0.045 \times S_t \\
+D_{t+1} &= 0.95 \times D_t + 0.95 \times 0.10 \times H_t
+\end{aligned}
+\end{equation}
+其中 $T_t = S_t + H_t + D_t$。
+
+\paragraph{各小区逐年详细预测}
+各小区第0年至第5年的自理、半失能、失能老人数量及年增长率如下所示。
+
+\begin{table}[H]
+\centering
+\caption{小区A逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 496 & 152 & 64 & 712 & -- \\
+\hline
+1 & 500 & 151 & 75 & 726 & 2.0\% \\
+\hline
+2 & 504 & 151 & 86 & 741 & 2.1\% \\
+\hline
+3 & 509 & 150 & 96 & 756 & 2.0\% \\
+\hline
+4 & 515 & 150 & 105 & 771 & 2.0\% \\
+\hline
+5 & 521 & 151 & 114 & 786 & 1.9\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区B逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 408 & 136 & 64 & 608 & -- \\
+\hline
+1 & 413 & 134 & 74 & 620 & 2.0\% \\
+\hline
+2 & 418 & 132 & 83 & 633 & 2.1\% \\
+\hline
+3 & 423 & 131 & 91 & 645 & 1.9\% \\
+\hline
+4 & 429 & 130 & 99 & 658 & 2.0\% \\
+\hline
+5 & 436 & 129 & 106 & 671 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区C逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 632 & 208 & 80 & 920 & -- \\
+\hline
+1 & 638 & 205 & 96 & 938 & 2.0\% \\
+\hline
+2 & 644 & 202 & 110 & 957 & 2.0\% \\
+\hline
+3 & 652 & 201 & 124 & 976 & 2.0\% \\
+\hline
+4 & 659 & 199 & 137 & 996 & 2.0\% \\
+\hline
+5 & 668 & 199 & 149 & 1016 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区D逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 368 & 120 & 56 & 544 & -- \\
+\hline
+1 & 372 & 118 & 65 & 555 & 2.0\% \\
+\hline
+2 & 376 & 117 & 73 & 566 & 2.0\% \\
+\hline
+3 & 381 & 116 & 80 & 577 & 1.9\% \\
+\hline
+4 & 386 & 116 & 87 & 589 & 2.1\% \\
+\hline
+5 & 391 & 115 & 94 & 601 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区E逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 536 & 176 & 72 & 784 & -- \\
+\hline
+1 & 541 & 173 & 85 & 800 & 2.0\% \\
+\hline
+2 & 547 & 171 & 97 & 816 & 2.0\% \\
+\hline
+3 & 553 & 170 & 109 & 832 & 2.0\% \\
+\hline
+4 & 560 & 169 & 119 & 849 & 2.0\% \\
+\hline
+5 & 568 & 168 & 130 & 866 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区F逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 328 & 104 & 40 & 472 & -- \\
+\hline
+1 & 331 & 103 & 48 & 481 & 1.9\% \\
+\hline
+2 & 334 & 102 & 55 & 491 & 2.1\% \\
+\hline
+3 & 337 & 102 & 62 & 501 & 2.0\% \\
+\hline
+4 & 341 & 101 & 69 & 511 & 2.0\% \\
+\hline
+5 & 345 & 101 & 75 & 521 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区G逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 592 & 192 & 80 & 864 & -- \\
+\hline
+1 & 598 & 189 & 94 & 881 & 2.0\% \\
+\hline
+2 & 604 & 188 & 108 & 899 & 2.0\% \\
+\hline
+3 & 611 & 186 & 120 & 917 & 2.0\% \\
+\hline
+4 & 618 & 185 & 132 & 935 & 2.0\% \\
+\hline
+5 & 626 & 185 & 143 & 954 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区H逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 392 & 128 & 48 & 568 & -- \\
+\hline
+1 & 395 & 126 & 58 & 579 & 1.9\% \\
+\hline
+2 & 399 & 125 & 67 & 591 & 2.1\% \\
+\hline
+3 & 404 & 124 & 75 & 603 & 2.0\% \\
+\hline
+4 & 408 & 123 & 83 & 615 & 2.0\% \\
+\hline
+5 & 414 & 123 & 91 & 627 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区I逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 504 & 168 & 64 & 736 & -- \\
+\hline
+1 & 509 & 165 & 77 & 751 & 2.0\% \\
+\hline
+2 & 514 & 163 & 89 & 766 & 2.0\% \\
+\hline
+3 & 520 & 161 & 100 & 781 & 2.0\% \\
+\hline
+4 & 526 & 160 & 110 & 797 & 2.0\% \\
+\hline
+5 & 533 & 159 & 120 & 813 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{小区J逐年预测}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 456 & 144 & 56 & 656 & -- \\
+\hline
+1 & 460 & 143 & 67 & 669 & 2.0\% \\
+\hline
+2 & 464 & 142 & 77 & 683 & 2.1\% \\
+\hline
+3 & 469 & 141 & 87 & 696 & 1.9\% \\
+\hline
+4 & 474 & 140 & 96 & 710 & 2.0\% \\
+\hline
+5 & 480 & 140 & 104 & 724 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+从以上各小区数据可以清晰地看到，C小区老年人口始终位居首位——第0年920人、第5年达1016人，远高于其他小区。这意味着C小区将持续产生最大的养老服务需求，是选址方案中不可妥协的优先级节点。其原因在于C小区初始老年人口基数最大且收入水平第二高，增长动力持续。从规划角度看，C小区本质上是整个服务网络的“锚点”，应作为重点覆盖对象，在预算和容量允许时优先提高其距离满意度。
+
+\paragraph{各小区老年人口总数汇总}
+各小区第0年末至第5年末总人口如表\ref{tab:total_pop}所示。
+
+\begin{table}[H]
+\centering
+\caption{各小区老年人口总数汇总（单位：人）}
+\label{tab:total_pop}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{小区} & \textbf{第0年末} & \textbf{第1年末} & \textbf{第2年末} & \textbf{第3年末} & \textbf{第4年末} & \textbf{第5年末} \\
+\hline
+A & 712 & 726 & 741 & 756 & 771 & 786 \\
+\hline
+B & 608 & 620 & 633 & 645 & 658 & 671 \\
+\hline
+C & 920 & 938 & 957 & 976 & 996 & 1016 \\
+\hline
+D & 544 & 555 & 566 & 577 & 589 & 601 \\
+\hline
+E & 784 & 800 & 816 & 832 & 849 & 866 \\
+\hline
+F & 472 & 481 & 491 & 501 & 511 & 521 \\
+\hline
+G & 864 & 881 & 899 & 917 & 935 & 954 \\
+\hline
+H & 568 & 579 & 591 & 603 & 615 & 627 \\
+\hline
+I & 736 & 751 & 766 & 781 & 797 & 813 \\
+\hline
+J & 656 & 669 & 683 & 696 & 710 & 724 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{各年末分项汇总（10小区合计）}
+各年末分项汇总数据如表\ref{tab:year_summary}所示（仅列出第5年末作为示例）。
+
+\begin{table}[H]
+\centering
+\caption{第5年末各小区分项数据}
+\label{tab:year_summary}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{小区} & \textbf{自理(S)} & \textbf{半失能(H)} & \textbf{失能(D)} & \textbf{总计} \\
+\hline
+A & 521 & 151 & 114 & 786 \\
+\hline
+B & 436 & 129 & 106 & 671 \\
+\hline
+C & 668 & 199 & 149 & 1016 \\
+\hline
+D & 391 & 115 & 94 & 601 \\
+\hline
+E & 568 & 168 & 130 & 866 \\
+\hline
+F & 345 & 101 & 75 & 521 \\
+\hline
+G & 626 & 185 & 143 & 954 \\
+\hline
+H & 414 & 123 & 91 & 627 \\
+\hline
+I & 533 & 159 & 120 & 813 \\
+\hline
+J & 480 & 140 & 104 & 724 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{区域汇总（10个小区合计）}
+区域汇总数据如表\ref{tab:region_summary}所示。
+
+\begin{table}[H]
+\centering
+\caption{区域汇总（10个小区合计）}
+\label{tab:region_summary}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{年份} & \textbf{自理(S)} & \textbf{半失能(H)} & \textbf{失能(D)} & \textbf{总计} & \textbf{年增长率} \\
+\hline
+0 & 4712 & 1528 & 624 & 6864 & -- \\
+\hline
+1 & 4757 & 1507 & 739 & 7003 & 2.0\% \\
+\hline
+2 & 4804 & 1493 & 845 & 7142 & 2.0\% \\
+\hline
+3 & 4859 & 1482 & 944 & 7285 & 2.0\% \\
+\hline
+4 & 4916 & 1473 & 1037 & 7426 & 1.9\% \\
+\hline
+5 & 4982 & 1470 & 1126 & 7578 & 2.0\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{关键发现与分析}
+上述区域汇总数据显示，5年内老年人口从6864人增长至7578人，净增714人（+10.4\%），年均复合增长率约2.0\%。这意味着未来5年基础设施需要预留约10\%的增长冗余。其原因在于，7\%的年新增率与5\%的年死亡率形成了约2\%/年的净增长差，呈线性累积效应。从工程规划角度看，若按第5年峰值需求一次性建设全部服务站点，前4年将面临严重的产能闲置和资金沉淀。因此建议采用分期建设策略——前期先建设3座核心服务站覆盖主要需求，第3年根据实际人口增长情况追加建设2座，以平滑投资节奏。
+
+更值得注意的是，失能老人群体从624人激增至1126人，增幅高达80.4\%，占比也从9.1\%攀升至14.9\%。这意味着高成本照护服务（上门护理、康复理疗、助浴等）的需求增速远超总人口增速，人均服务成本将出现结构性上升。追究其根源，失能群体处于“只进不出”的累积状态——半失能群体以每年10\%的速率转入失能阶段，且缺乏逆转恢复路径，导致失能人数持续堆积。从运营角度看，这种结构漂移将直接推高服务成本结构，若定价策略不随之调整，利润空间将被严重挤压。因此建议在后续问题4的敏感性分析中，增设“H→D转移概率从10\%上调至12\%”的独立情景，以评估成本结构在加速老龄化下的脆弱性。
+
+与失能群体的剧烈增长形成对比的是，半失能老人群体基本保持稳定，仅从1528人变动至1470人（-3.8\%），占比22.3\%→19.4\%。这背后是一个动态平衡：每年约有201人从自理转入半失能，同时约145人从半失能转入失能、约76人自然死亡，流入与流出大致相抵。这意味着半失能群体本质上是一个“中转站”——也是最具干预价值的中间层。每成功延缓1位半失能老人进入失能阶段，年均约可节省386元护理服务成本。从健康管理角度看，这说明预防性服务（日间照料、康复理疗）具有显著的经济杠杆效应。因此建议在服务组合设计中，对半失能群体配置相对密集的干预资源，并量化延缓转移概率的经济价值，为定价与政府补贴谈判提供数据支撑。
+
+最后，自理老人从4712人增长至4982人（+5.7\%），仍是绝对数量最大的群体，但占比从68.6\%降至65.7\%。7\%的新增老人全部归入自理类别，抵消死亡与$S\to H$转移后仍有余量，因此自理人数继续增长，然而人口结构正在向高照护需求方向漂移。从商业模式角度看，自理老人的服务需求以助餐等低毛利项目为主，而失能照护才是高利润服务的来源，这意味着未来营收结构将持续向失能照护倾斜。因此建议在长期财务规划中关注服务组合的结构性变化——失能照护占比上升将推高营收但也推高成本，需审慎评估毛利率的长期走势，避免“增收不增利”的局面。
+
+\subsubsection{问题1.2：第5年末各小区各项服务理论月需求次数预测}
+
+说明：理论需求量 $=$ 第5年末各类老人数 $\times$ 该类老人月均服务需求次数，本题不考虑消费能力约束。
+
+\paragraph{各小区第5年末老人数量}
+各小区第5年末老人数量见表\ref{tab:year5_pop}。
+
+\begin{table}[H]
+\centering
+\caption{各小区第5年末老人数量}
+\label{tab:year5_pop}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{小区} & \textbf{自理(S)} & \textbf{半失能(H)} & \textbf{失能(D)} & \textbf{总计} \\
+\hline
+A & 521 & 151 & 114 & 786 \\
+\hline
+B & 436 & 129 & 106 & 671 \\
+\hline
+C & 668 & 199 & 149 & 1016 \\
+\hline
+D & 391 & 115 & 94 & 601 \\
+\hline
+E & 568 & 168 & 130 & 866 \\
+\hline
+F & 345 & 101 & 75 & 521 \\
+\hline
+G & 626 & 185 & 143 & 954 \\
+\hline
+H & 414 & 123 & 91 & 627 \\
+\hline
+I & 533 & 159 & 120 & 813 \\
+\hline
+J & 480 & 140 & 104 & 724 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{各小区各项服务理论月需求次数}
+以小区A为例，理论需求如表\ref{tab:demand_A}所示。
+
+\begin{table}[H]
+\centering
+\caption{小区A服务理论需求预测}
+\label{tab:demand_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{服务项目} & \textbf{自理需求} & \textbf{半失能需求} & \textbf{失能需求} & \textbf{合计} \\
+\hline
+助餐 & 7294 & 3020 & 2508 & 12822 \\
+\hline
+日间照料 & 4168 & 2114 & 2052 & 8334 \\
+\hline
+上门护理 & 0 & 906 & 1368 & 2274 \\
+\hline
+康复理疗 & 1042 & 604 & 684 & 2330 \\
+\hline
+助浴 & 0 & 302 & 456 & 758 \\
+\hline
+紧急救助 & 78 & 151 & 342 & 571 \\
+\hline
+\end{tabular}
+\end{table}
+
+其他小区的类似表格因篇幅限制不再全部列出，但完整结果均用于后续分析。
+
+该表揭示了各小区内部三类老人对不同服务的需求分化格局。助餐在每一个小区都是绝对主力，月需求次数远超其他服务，这与助餐覆盖全部三类老人群体有关。从社区对比来看，C、G两小区因人口基数较大，各分项需求的绝对值在全区域中最为突出，成为站点布局中需要重点覆盖的人口重心。与此同时，D、F、H等小区因收入水平偏低且总人数较少，后续在考虑消费能力约束时，其实际有效需求可能出现显著缩水。
+
+\paragraph{按服务项目汇总（10小区合计）}
+各服务项目汇总数据如表\ref{tab:service_total}所示。
+
+\begin{table}[H]
+\centering
+\caption{各服务项目需求汇总（10小区合计）}
+\label{tab:service_total}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{服务项目} & \textbf{自理需求} & \textbf{半失能需求} & \textbf{失能需求} & \textbf{总需求} \\
+\hline
+助餐 & 69748 & 29400 & 24772 & 123920 \\
+\hline
+日间照料 & 39856 & 20580 & 20268 & 80704 \\
+\hline
+上门护理 & 0 & 8820 & 13512 & 22332 \\
+\hline
+康复理疗 & 9964 & 5880 & 6756 & 22600 \\
+\hline
+助浴 & 0 & 2940 & 4504 & 7444 \\
+\hline
+紧急救助 & 747 & 1470 & 3378 & 5595 \\
+\hline
+\end{tabular}
+\end{table}
+
+该汇总表清晰地展现了各服务的需求来源结构。助餐能够占据绝对主导地位，其根本原因在于它是唯一覆盖全部三类老人的服务。从运营角度而言，助餐是养老服务站天然的“流量入口”，高频次、低毛利的特征决定了它适合作为规模化运营的核心模块，通过“中央厨房集中生产+社区站点配送分发”的模式在固定成本摊薄中获取效率红利。
+
+相比之下，上门护理与助浴的需求几乎全部来自失能和半失能老人群体——自理老人的需求频率为零。失能老人以不足15\%的人数贡献了上门护理总量的68\%以上，这使得两类服务呈现出典型的“刚需+高成本”特征。从站点设计角度看，这意味着站点在配置专业护理人员和设备时，应以失能老人分布而非总人口分布作为依据。由此建议在问题2的选址阶段，将站点分为“综合站”和“护理专站”，实现差异化配置以提高资源效率。
+
+\paragraph{各小区所有服务月需求次数合计}
+各小区月需求总次数如表\ref{tab:community_total_demand}所示。
+
+\begin{table}[H]
+\centering
+\caption{各小区所有服务月需求次数合计}
+\label{tab:community_total_demand}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{小区} & \textbf{助餐} & \textbf{日间照料} & \textbf{上门护理} & \textbf{康复理疗} & \textbf{助浴} & \textbf{紧急救助} & \textbf{总计} \\
+\hline
+A & 12822 & 8334 & 2274 & 2330 & 758 & 571 & 27089 \\
+\hline
+B & 11016 & 7202 & 2046 & 2024 & 682 & 512 & 23482 \\
+\hline
+C & 16610 & 10812 & 2982 & 3026 & 994 & 746 & 35170 \\
+\hline
+D & 9842 & 6430 & 1818 & 1806 & 606 & 456 & 20958 \\
+\hline
+E & 14172 & 9236 & 2568 & 2588 & 856 & 643 & 30063 \\
+\hline
+F & 8500 & 5524 & 1506 & 1544 & 502 & 378 & 17954 \\
+\hline
+G & 15610 & 10172 & 2826 & 2850 & 942 & 708 & 33108 \\
+\hline
+H & 10258 & 6672 & 1830 & 1866 & 610 & 458 & 21694 \\
+\hline
+I & 13282 & 8650 & 2394 & 2422 & 798 & 599 & 28145 \\
+\hline
+J & 11808 & 7672 & 2088 & 2144 & 696 & 524 & 24932 \\
+\hline
+\end{tabular}
+\end{table}
+
+各小区总需求呈现出明显的梯度分化。C小区以超过3.5万次的月总需求领跑全区域，其需求体量约是F小区的1.5倍以上。从运营调度角度看，社区间的需求不均衡意味着站点的服务能力不能简单按小区均匀分配——需要对需求密度较高的小区（C、G、E）配置更充足的站点容量，而对需求密度较低的小区（F、D、H）考虑合并覆盖或配置小型站点。
+
+\paragraph{区域总需求一览}
+区域总需求如表\ref{tab:region_total_demand}所示。
+
+\begin{table}[H]
+\centering
+\caption{区域总需求一览}
+\label{tab:region_total_demand}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{服务项目} & \textbf{总需求（次/月）} \\
+\hline
+助餐 & 123920 \\
+\hline
+日间照料 & 80704 \\
+\hline
+上门护理 & 22332 \\
+\hline
+康复理疗 & 22600 \\
+\hline
+助浴 & 7444 \\
+\hline
+紧急救助 & 5595 \\
+\hline
+\textbf{合计} & \textbf{262595} \\
+\hline
+\end{tabular}
+\end{table}
+
+该区域总表揭示了第5年末10个社区的养老服务总规模：月需求总量约26.3万人次，折算为日均约8753人次（理论值，含紧急救助）。助餐以超过10万次的月需求占据了总量的近半。这一总量为问题2的站点布局提供了参考基准。需注意，经消费约束修正后（问题1.3），日均有效需求约为8260人次，后续选址和定价均基于约束后需求。
+
+从成本结构角度看，紧急救助虽然在总量中占比不足2.5\%，却因其免费属性和每次8元的服务成本而对服务站的利润结构形成隐性压力。如果完全由服务站自负盈亏，紧急救助将成为一项持续亏损的刚性支出，建议在问题3的补贴政策设计中将其纳入专项全额拨付范畴。与此同时，失能老人虽然仅占总人数的约14.9\%，却贡献了上门护理的68\%以上和助浴的55\%以上——随着时间推移，失能老人占比的自然上升将显著抬升服务站的高成本服务比例，使整体成本结构持续恶化。
+
+注：此处为理论需求总量，未考虑消费能力约束。实际有效需求将在问题1.3中结合消费能力上限与价格因素进一步修正。
+
+\subsubsection{问题1.3：消费约束下第5年末各小区各类老人月均服务需求次数}
+
+说明：先计算理论服务费用，若超过消费上限则等比削减各类服务次数并取整。消费上限 $=$ 月收入 $\times$ 比例（自理20\%，半失能25\%，失能30\%）。紧急救助单价为0（公益免费），不参与费用计算也不参与等比削减。
+
+\paragraph{各小区各类老人的消费约束判断}
+消费约束判断结果如表\ref{tab:constraint_judge}所示（仅展示部分，完整30组数据应全部列出）。
+
+\begin{longtable}{|c|c|c|c|c|c|c|}
+\caption{各小区各类老人消费约束判断}
+\label{tab:constraint_judge}\\
+\hline
+\textbf{小区} & \textbf{类型} & \textbf{月收入} & \textbf{理论月费} & \textbf{消费上限} & \textbf{缩放比} & \textbf{状态} \\
+\hline
+\endfirsthead
+\hline
+\endhead
+A & S & 3400 & 356.0 & 680.0 & 1.0000 & 无需削减 \\
+A & H & 3400 & 822.0 & 850.0 & 1.0000 & 无需削减 \\
+A & D & 3400 & 1208.0 & 1020.0 & 0.8444 & 触发削减 \\
+B & S & 3100 & 356.0 & 620.0 & 1.0000 & 无需削减 \\
+B & H & 3100 & 822.0 & 775.0 & 0.9428 & 触发削减 \\
+B & D & 3100 & 1208.0 & 930.0 & 0.7699 & 触发削减 \\
+C & S & 3800 & 356.0 & 760.0 & 1.0000 & 无需削减 \\
+C & H & 3800 & 822.0 & 950.0 & 1.0000 & 无需削减 \\
+C & D & 3800 & 1208.0 & 1140.0 & 0.9437 & 触发削减 \\
+D & S & 2900 & 356.0 & 580.0 & 1.0000 & 无需削减 \\
+D & H & 2900 & 822.0 & 725.0 & 0.8820 & 触发削减 \\
+D & D & 2900 & 1208.0 & 870.0 & 0.7202 & 触发削减 \\
+\ldots & \ldots & \ldots & \ldots & \ldots & \ldots & \ldots \\
+\hline
+\end{longtable}
+
+在全部30组中，有15组触发了消费削减，主要集中在低收入小区F、D、H。
+
+\paragraph{消费约束后：每位老人月均服务需求次数}
+以小区A为例，约束后人均需求如表\ref{tab:constraint_A}所示。
+
+\begin{table}[H]
+\centering
+\caption{小区A约束后人均需求}
+\label{tab:constraint_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{服务项目} & \textbf{自理} & \textbf{半失能} & \textbf{失能} \\
+\hline
+助餐 & 14 & 20 & 19 \\
+\hline
+日间照料 & 8 & 14 & 15 \\
+\hline
+上门护理 & 0 & 6 & 10 \\
+\hline
+康复理疗 & 2 & 4 & 5 \\
+\hline
+助浴 & 0 & 2 & 3 \\
+\hline
+紧急救助 & 0.15 & 1 & 3 \\
+\hline
+\end{tabular}
+\end{table}
+
+其他小区的类似表格此处从略。
+
+\paragraph{各小区各类老人约束后月需求总次数（人数 $\times$ 人均次数）}
+以小区A为例，约束后总需求如表\ref{tab:constrained_total_A}所示。
+
+\begin{table}[H]
+\centering
+\caption{小区A约束后月需求总次数}
+\label{tab:constrained_total_A}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{服务项目} & \textbf{自理} & \textbf{半失能} & \textbf{失能} & \textbf{合计} \\
+\hline
+助餐 & 7294 & 3020 & 2166 & 12480 \\
+\hline
+日间照料 & 4168 & 2114 & 1710 & 7992 \\
+\hline
+上门护理 & 0 & 906 & 1140 & 2046 \\
+\hline
+康复理疗 & 1042 & 604 & 570 & 2216 \\
+\hline
+助浴 & 0 & 302 & 342 & 644 \\
+\hline
+紧急救助 & 78 & 151 & 342 & 571 \\
+\hline
+\end{tabular}
+\end{table}
+
+其他小区的类似表格此处从略。
+
+\paragraph{区域汇总（约束后）与对比}
+约束后区域总需求如表\ref{tab:constrained_region}所示。
+
+\begin{table}[H]
+\centering
+\caption{消费约束后区域总需求（次/月）}
+\label{tab:constrained_region}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{服务项目} & \textbf{总需求} \\
+\hline
+助餐 & 118439 \\
+\hline
+日间照料 & 76307 \\
+\hline
+上门护理 & 19592 \\
+\hline
+康复理疗 & 21262 \\
+\hline
+助浴 & 6610 \\
+\hline
+紧急救助 & 5595 \\
+\hline
+\textbf{合计} & \textbf{247805} \\
+\hline
+\end{tabular}
+\end{table}
+
+消费约束 vs 理论需求对比如表\ref{tab:compare_constraint}所示。
+
+\begin{table}[H]
+\centering
+\caption{消费约束 vs 理论需求对比（区域合计）}
+\label{tab:compare_constraint}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{服务项目} & \textbf{理论需求} & \textbf{约束后需求} & \textbf{削减量} & \textbf{削减率} \\
+\hline
+助餐 & 123920 & 118439 & 5481 & 4.4\% \\
+\hline
+日间照料 & 80704 & 76307 & 4397 & 5.4\% \\
+\hline
+上门护理 & 22332 & 19592 & 2740 & 12.3\% \\
+\hline
+康复理疗 & 22600 & 21262 & 1338 & 5.9\% \\
+\hline
+助浴 & 7444 & 6610 & 834 & 11.2\% \\
+\hline
+紧急救助 & 5595 & 5595 & 0 & 0.0\% \\
+\hline
+\textbf{合计} & \textbf{262595} & \textbf{247805} & \textbf{14790} & \textbf{5.6\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+上述消费约束对比数据显示，10个小区区域合计月均服务需求约为247805次，相较理论需求262595次，总体削减约5.6\%。这一差距直接反映了当前收入水平下老年群体对社区养老服务的有效购买力缺口。在制定区域养老服务设施规划时，需要在理论需求与有效需求之间寻找平衡点，同时通过补贴机制将后者逐步拉升至接近前者的水平。
+
+紧急救助服务不参与消费约束削减，其理论需求与约束后需求一致（均为5595次/月），确保生命安全保障类公益服务不受收入水平影响。
+
+从小区维度审视，消费约束的冲击在不同社区之间呈现出显著的分化格局。在全部30组中，有15组触发了消费削减，主要集中在低收入小区F（月收入2700元）、D（2900元）、H（3000元）。以小区F的失能老人为例：月收入2700元 $\times$ 30\%消费比例 $=$ 810元消费上限，而其理论月费高达约1330元，上限仅为理论费用的约60\%，导致各类服务需求被等比削减接近40\%。与之形成鲜明对比的是，高收入小区的自理老人几乎不受任何削减影响。这种“收入越低被削减比例越大”的格局本质上制造了一种“逆向补贴”效应。解决这一结构性不公平的关键路径是引入收入分档定价：对月收入低于3000元的老人发放定向服务券补贴，使其有效消费上限与中等收入老人拉平；同时可按收入梯度设置差异化的个人支付比例。
+
+进一步按失能类型分析，失能和半失能老人在消费约束下的处境尤为严峻。在所有触发削减的15组中，D类和H类老人占据了绝大多数。要纠正这一偏差，应当从“一刀切等比削减”转向“刚性需求优先保护”策略：将助餐、紧急救助以及失能老人必需的日间照料和上门护理列为刚性需求，在消费约束下优先全额保障；康复理疗、助浴等提升生活质量的可选服务则按剩余消费空间进行阶梯式削减。长期而言，建议构建“基础包+自选包”服务套餐体系——基础包覆盖所有老人的基本生存照护需求，由政府兜底保障；自选包由老人按收入比例自付，兼顾公平性与可持续性。
+
+\subsection{问题2：服务站选址与规模优化}
+
+\subsubsection{关键指标口径说明}
+
+为避免不同阶段指标混用，本节开始前统一列明全文关键指标的定义与口径，如表\ref{tab:indicator_def}所示。
+
+\begin{table}[H]
+\centering
+\caption{关键指标口径说明表}
+\label{tab:indicator_def}
+\renewcommand{\arraystretch}{1.2}
+{\small
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{指标名称} & \textbf{数值} & \textbf{所属阶段} & \textbf{含消费约束} & \textbf{含容量截断} & \textbf{含满意度修正} & \textbf{含价格反馈} \\
+\hline
+理论月总需求 & 262595次/月 & 问题1.2 & 否 & 否 & 否 & 否 \\
+\hline
+约束后月总需求 & 247805次/月 & 问题1.3 & 是 & 否 & 否 & 否 \\
+\hline
+理论日总需求 & 8753人次/日 & 问题1.2 & 否 & 否 & 否 & 否 \\
+\hline
+约束后日总需求 & 8260人次/日 & 问题1.3 & 是 & 否 & 否 & 否 \\
+\hline
+G站原始日负荷 & 4074人次/日 & 问题2分配 & 是 & 否 & 否 & 否 \\
+\hline
+G站容量截断后服务量 & 1000人次/日 & 问题2评估 & 是 & 是 & 否 & 否 \\
+\hline
+问题2平均满意度 & 0.9292 & 问题2 & 是 & 是 & 是 & 否 \\
+\hline
+问题3加权满意度 & 0.9191 & 问题3 & 是 & 是 & 是 & 是 \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+说明：理论需求不含任何约束修正；约束后需求经消费能力修正（紧急救助除外）；原始日负荷为硬分配后各站承接的约束后需求之和；容量截断后服务量为 $\min(\text{原始负荷},\ \text{日容量})$；满意度含S1/S2/S3三维加权。问题2满意度基于基准价格（S3=1.0），问题3满意度基于最优定价（S3可能变化）。
+
+\subsubsection{问题2.1：服务站选址与规模优化}
+
+总预算: 120万元，总老年人口: 7578人，总日约束后需求（问题1输出）: 8260人次。
+
+\paragraph{可行配置统计}
+共有 \textbf{15207} 个可行配置满足预算约束。
+
+\paragraph{各小区距离与S1满意度对照表}
+
+\begin{table}[H]
+\centering
+\caption{各小区距离与S1满意度对照表}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{} & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{D} & \textbf{E} & \textbf{F} & \textbf{G} & \textbf{H} & \textbf{I} & \textbf{J} \\
+\hline
+A & 1.00 & 0.75 & 0.00 & 0.60 & 0.00 & 0.00 & 0.00 & 0.60 & 0.00 & 0.90 \\
+B & 0.75 & 1.00 & 0.60 & 0.90 & 0.00 & 0.00 & 0.60 & 0.90 & 0.60 & 1.00 \\
+C & 0.00 & 0.60 & 1.00 & 0.60 & 0.75 & 0.60 & 0.90 & 0.60 & 0.75 & 0.60 \\
+D & 0.60 & 0.90 & 0.60 & 1.00 & 0.60 & 0.00 & 0.75 & 1.00 & 0.90 & 0.90 \\
+E & 0.00 & 0.00 & 0.75 & 0.60 & 1.00 & 0.90 & 0.90 & 0.60 & 0.90 & 0.60 \\
+F & 0.00 & 0.00 & 0.60 & 0.00 & 0.90 & 1.00 & 0.90 & 0.00 & 0.60 & 0.00 \\
+G & 0.00 & 0.60 & 0.90 & 0.75 & 0.90 & 0.90 & 1.00 & 0.60 & 0.90 & 0.75 \\
+H & 0.60 & 0.90 & 0.60 & 1.00 & 0.60 & 0.00 & 0.60 & 1.00 & 0.75 & 1.00 \\
+I & 0.00 & 0.60 & 0.75 & 0.90 & 0.90 & 0.60 & 0.90 & 0.75 & 1.00 & 0.90 \\
+J & 0.90 & 1.00 & 0.60 & 0.90 & 0.60 & 0.00 & 0.75 & 1.00 & 0.90 & 1.00 \\
+\hline
+\end{tabular}
+\end{table}
+
+直观来看，J、G、I 作为站点选址时对其他小区的平均S1最高（分别为 0.77、0.73、0.73），具有天然的地理中心优势。布局选址时应优先考虑这些小区。而从被覆盖的角度，J、G、I 无论站点设在何处，平均S1均在 0.77 以上，意味着这些小区几乎总能享有满意距离内的服务。相比之下，A、F、E 等小区位置偏边缘，只有当站点恰好选址于邻近社区时才能获得优质S1。这决定了在有限预算下，边缘小区是否能被覆盖是约束条件而非自然结果，选址时需要专门“照顾”。
+
+\paragraph{TOP 20 最优方案}
+
+\begin{table}[H]
+\centering
+\caption{TOP 20 最优方案}
+\renewcommand{\arraystretch}{1.3}
+{\small
+\begin{tabular}{|c|c|c|c|c|c|l|}
+\hline
+\textbf{排名} & \textbf{地理覆盖率} & \textbf{满意度} & \textbf{需求满足率} & \textbf{容量缺口率} & \textbf{建造成本} & \textbf{站点方案} \\
+\hline
+1 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), B(中型), D(中型), F(小型), G(小型) \\
+2 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), B(中型), F(小型), G(小型), H(中型) \\
+3 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), D(中型), F(小型), G(小型), J(中型) \\
+4 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), F(小型), G(小型), H(中型), J(中型) \\
+5 & 100.0\% & 0.9287 & 62.2\% & 37.8\% & 118万 & B(小型), D(中型), F(小型), G(小型), J(中型) \\
+6 & 100.0\% & 0.9287 & 62.2\% & 37.8\% & 118万 & B(小型), F(小型), G(小型), H(中型), J(中型) \\
+7 & 100.0\% & 0.9272 & 62.2\% & 37.8\% & 117万 & A(小型), B(小型), F(小型), G(小型), J(大型) \\
+8 & 100.0\% & 0.9272 & 62.2\% & 37.8\% & 117万 & A(小型), D(小型), F(小型), G(小型), H(大型) \\
+9 & 100.0\% & 0.9263 & 62.2\% & 37.8\% & 117万 & D(小型), F(小型), G(小型), H(小型), J(大型) \\
+10 & 100.0\% & 0.9262 & 62.1\% & 37.9\% & 118万 & A(小型), B(中型), E(小型), F(小型), H(中型) \\
+11 & 100.0\% & 0.9237 & 62.2\% & 37.8\% & 113万 & B(小型), D(中型), G(小型), J(大型) \\
+12 & 100.0\% & 0.9237 & 62.2\% & 37.8\% & 117万 & B(小型), D(小型), G(小型), H(小型), J(大型) \\
+13 & 100.0\% & 0.9236 & 62.2\% & 37.8\% & 114万 & A(中型), B(中型), D(中型), G(小型) \\
+14 & 100.0\% & 0.9236 & 62.2\% & 37.8\% & 114万 & A(中型), B(中型), G(小型), H(中型) \\
+15 & 100.0\% & 0.9236 & 62.2\% & 37.8\% & 118万 & A(中型), B(中型), D(小型), G(小型), H(小型) \\
+16 & 100.0\% & 0.9236 & 62.2\% & 37.8\% & 118万 & A(中型), D(小型), G(小型), H(小型), J(中型) \\
+17 & 100.0\% & 0.9233 & 62.2\% & 37.8\% & 113万 & B(大型), D(中型), F(小型), G(小型) \\
+18 & 100.0\% & 0.9233 & 62.2\% & 37.8\% & 113万 & B(大型), F(小型), G(小型), H(中型) \\
+19 & 100.0\% & 0.9233 & 62.2\% & 37.8\% & 113万 & F(小型), H(中型), I(小型), J(大型) \\
+20 & 100.0\% & 0.9233 & 62.2\% & 37.8\% & 117万 & B(大型), D(小型), F(小型), G(小型), H(小型) \\
+\hline
+\end{tabular}
+}
+\end{table}
+
+观察TOP20方案发现一个清晰的选址规律：G(小型) 出现在 18/20 个方案中，紧随其后的是 F(小型)（14/20）。这些高频站点恰好对应了前述S1矩阵中辐射能力最强的小区，说明算法在迭代寻优过程中始终在"覆盖效率"与"站点数量"之间寻找最佳平衡。站点数量从 4 到 5 个不等，建造成本在 113~118 万元之间浮动，多个站点组合都能达到接近最优的效果，决策者可根据地块可用性灵活调整。
+
+\paragraph{最优方案详细分析}
+
+最优方案: 地理覆盖率=100.0\%, 平均满意度=0.9292，需求满足率=62.2\%，容量缺口率=37.8\%，建造成本: 118万元（预算利用率 98.3\%）。该方案在地理覆盖率上达到最优，但需求满足率仅为62.2\%，表明虽然所有小区均在1000m服务半径内，但受限于站点容量（尤其G站超载），约37.8\%的原始需求无法被实际服务。因此，该方案应定性为地理覆盖率较优的基准方案，而非服务需求全部满足的方案。
+
+站点详情如表 \ref{tab:optimal_sites} 所示。
+
+\begin{table}[H]
+\centering
+\caption{最优方案站点详情}
+\label{tab:optimal_sites}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{站点} & \textbf{规模} & \textbf{容量(日)} & \textbf{利用率} & \textbf{S2} \\
+\hline
+A & 小型 & 1000 & 86.2\% & 0.72 \\
+B & 中型 & 2000 & 74.7\% & 0.93 \\
+D & 中型 & 2000 & 63.6\% & 0.93 \\
+F & 小型 & 1000 & 51.4\% & 1.00 \\
+G & 小型 & 1000 & 100.0\% & 0.60 \\
+\hline
+\end{tabular}
+\end{table}
+
+小区覆盖与满意度如表 \ref{tab:coverage} 所示。
+
+\begin{table}[H]
+\centering
+\caption{各小区覆盖与满意度}
+\label{tab:coverage}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{小区} & \textbf{老人数} & \textbf{最优站点} & \textbf{距离(m)} & \textbf{S1} & \textbf{S2} & \textbf{S3} & \textbf{满意度} & \textbf{有覆盖？} \\
+\hline
+A & 786 & A & 0 & 1.00 & 0.72 & 1.00 & 0.9160 & 是 \\
+B & 671 & B & 0 & 1.00 & 0.93 & 1.00 & 0.9790 & 是 \\
+C & 1016 & G & 500 & 0.90 & 0.60 & 1.00 & 0.8600 & 是 \\
+D & 601 & D & 0 & 1.00 & 0.93 & 1.00 & 0.9790 & 是 \\
+E & 866 & G & 400 & 0.90 & 0.60 & 1.00 & 0.8600 & 是 \\
+F & 521 & F & 0 & 1.00 & 1.00 & 1.00 & 1.0000 & 是 \\
+G & 954 & G & 0 & 1.00 & 0.60 & 1.00 & 0.8800 & 是 \\
+H & 627 & D & 300 & 1.00 & 0.93 & 1.00 & 0.9790 & 是 \\
+I & 813 & G & 400 & 0.90 & 0.60 & 1.00 & 0.8600 & 是 \\
+J & 724 & B & 300 & 1.00 & 0.93 & 1.00 & 0.9790 & 是 \\
+\hline
+\end{tabular}
+\end{table}
+
+站点 A、B、D、F、G 的组合恰好构成全域覆盖的最小支配集。具体来看：A 站点负责 A（1个小区）；B 站点负责 B、J（2个小区）；D 站点负责 D、H（2个小区）；F 站点负责 F（1个小区）；G 站点负责 C、E、G、I（4个小区）。从地理位置上看，A、B、D、F、G 均匀分布在社区的东、中、西部，各站点以约500~1000m的服务半径相互衔接，不重叠、不缺位。
+
+值得关注的是利用率的分化现象：A 站利用率高达 86.2\%（S2=0.72），G 站利用率高达 100.0\%（S2=0.60），而 D 站利用率仅为 63.6\%（S2=0.93），F 站利用率仅为 51.4\%（S2=1.00）。G站是当前基准布局方案的容量瓶颈站点：原始日负荷4074人次远超1000人次/日的容量上限，约3074人次/日的需求因容量截断而无法被实际服务，S2降至0.60，直接拉低整体满意度。F站低利用率则说明最近距离优先的硬分配规则没有实现负荷均衡——F站距E小区仅600m，但模型将E全量指派给了距离更近但已超载的G站。从满意度公式的敏感性看，S2在利用率突破85\%后从0.85骤降至0.72，因此容量瓶颈站点的满意度拖尾效应是当前方案最主要的短板。
+
+从满意度结构来看，各小区S1平均为0.970（方差0.0021），S2平均为0.784（方差0.0271），S3恒为1.00。S2不仅均值低于S1，方差也大于S1，这意味着满意度的高低差异主要由利用率驱动。经济含义是：在所有小区都已享有合理步行距离的前提下，进一步缩短距离的边际收益极低；真正决定老人服务体验的，是站点内是否拥挤、是否需要排长队。S1属于“硬件可达性”（选址一劳永逸），S2反映“软件可及性”（运营需持续关注），管理者在规划阶段确定好点位之后，应将运营重心转移至流量监控与负荷均衡上。最优方案的预算利用率为98.3\%，剩余2万元。这笔余额不足以再建一个最小规模站点（小型站18万元），因此“在现有方案上加一个站”在数学上不可行，这也印证了为何预算约束的紧致性恰好决定了站点数量的上界。如果政策允许将剩余资金用于已建站点的设备升级或适老化改造，可以进一步改善S2和S3而不改变选址骨架。
+
+\paragraph{对比次优方案}
+
+\begin{table}[H]
+\centering
+\caption{次优方案对比}
+\renewcommand{\arraystretch}{1.3}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|l|}
+\hline
+\textbf{方案} & \textbf{地理覆盖率} & \textbf{满意度} & \textbf{需求满足率} & \textbf{容量缺口率} & \textbf{成本} & \textbf{站点方案} \\
+\hline
+方案2 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), B(中型), F(小型), G(小型), H(中型) \\
+方案3 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), D(中型), F(小型), G(小型), J(中型) \\
+方案4 & 100.0\% & 0.9292 & 62.2\% & 37.8\% & 118万 & A(小型), F(小型), G(小型), H(中型), J(中型) \\
+方案5 & 100.0\% & 0.9287 & 62.2\% & 37.8\% & 118万 & B(小型), D(中型), F(小型), G(小型), J(中型) \\
+方案6 & 100.0\% & 0.9287 & 62.2\% & 37.8\% & 118万 & B(小型), F(小型), G(小型), H(中型), J(中型) \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+对比第2、第3名方案可以看出次优方案各自的取舍逻辑。综合来看，最优方案之所以胜出，关键在于它精准地平衡了四个目标：全覆盖（地理覆盖率100\%）→ 保底线、高满意度（综合0.929）→ 提品质、需求满足率（62.2\%）→ 反映实际服务能力、合理的站点数量（5站）→ 控成本。值得注意的是，所有TOP20方案的需求满足率和容量缺口率几乎相同（约62.2\%和37.8\%），这是因为120万元预算约束下各方案的总容量相近，G站超载是共性瓶颈。因此，在当前预算水平下，需求满足率的提升空间有限，需通过增加预算或改用流分配模型来突破。
+
+
+
+
+\input{问题2_2_2_3_结果报告}
+
+\input{问题3_结果报告}
+
+\input{问题4_结果报告}
+
+\section{模型的评价、改进和推广}
+
+\subsection{模型优点}
+
+本文模型围绕“需求预测—站点规划—定价补贴—灵敏度检验”形成完整链条，各部分之间衔接清晰，能够较好地反映社区养老服务站从建设到运营的全过程。
+
+首先，人口预测模型具有较强的解释性。模型将老人划分为自理、半失能和失能三类，并结合死亡率、新增老人比例和健康状态转移概率进行逐年递推，能够体现未来五年老人数量和健康结构的动态变化。
+
+其次，选址模型综合考虑了预算、服务半径、服务能力和满意度等约束，不仅关注服务站“建在哪里”，也关注“建多大”和“服务谁”，比单纯按人口数量选址更加符合实际规划需求。
+
+再次，定价与补贴模型兼顾老人满意度和机构运营可持续性。通过价格满意度、政府补贴和利润率约束，模型能够在降低老人负担和保证服务站保本微利之间取得平衡。
+
+最后，本文通过灵敏度分析检验了关键参数变化对方案的影响，使模型不仅能给出基准情景下的最优方案，也能评价方案在成本、预算和人口变化条件下的稳定性。
+
+\subsection{模型不足与改进方向}
+
+本文模型在保证可计算性和可解释性的同时，也对现实情况作了一定简化，主要不足如下。
+
+第一，人口预测模型假设各类转移概率在五年内保持稳定，未考虑医疗水平提升、慢性病干预、社区康复服务改善等因素对老人健康状态变化的影响。后续可引入动态转移概率，使转移概率随年份、服务覆盖水平或健康干预强度变化。
+
+第二，服务需求主要由老人类型决定，未充分考虑个人偏好、家庭照护能力、收入差异和服务价格弹性等因素。后续可建立更加细致的需求函数，将价格、距离、收入和服务满意度共同纳入需求预测。
+
+第三，本文使用小区间距离矩阵衡量服务可达性，但现实中老人出行还受到道路条件、交通便利性、电梯、坡道和无障碍设施等因素影响。后续可将距离指标扩展为综合出行成本指标，提高空间可达性评价的真实性。
+
+第四，服务站容量按总服务人次衡量，未细分不同服务项目对人员、设备和时间的差异化占用。后续可将容量约束细化为助餐能力、护理能力、康复能力、助浴能力等多维容量约束。
+
+第五，定价模型采用相对统一的定价策略，未充分考虑不同服务项目之间成本结构和需求弹性的差异。后续可采用差异化定价模型，对不同服务项目分别定价，以获得更优的满意度和利润平衡。
+
+\subsection{模型推广}
+
+本文模型不仅适用于本题所给的10个小区养老服务站规划，也可推广到其他公共服务设施布局与运营优化问题。
+
+在社区养老领域，该模型可推广到其他街道、城区或县域养老服务网络规划中，用于确定养老服务站、日间照料中心、助餐点和康复护理点的建设位置与规模。
+
+在医疗卫生领域，模型可用于社区卫生服务中心、便民药房、核酸检测点或家庭医生服务点的选址优化，解决服务半径、人口需求和资源配置之间的平衡问题。
+
+在公共服务设施规划中，模型也可推广到托育中心、社区食堂、便民服务站、应急避难点等设施的建设布局问题。只需替换人口需求、服务能力、建设成本和满意度评价规则，即可形成类似的优化框架。
+
+总体来看，本文模型具有较好的通用性和扩展性，能够为政府在有限财政资源下进行公共服务设施规划、运营定价和政策补贴设计提供定量化决策支持。
+
+\end{document}
